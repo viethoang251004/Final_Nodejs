@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "8080:8080" # ánh xạ cổng 8080 từ container ra máy host
+    environment:
+      - PORT=8080
+      - CONNECTION_STRING=mongodb://database:27017/ePhoneShop
+    depends_on:
+      - database
+
+  database:
+    image: mongo:6
+    container_name: database
+    ports:
+      - "27017:27017" # ánh xạ cổng 27017 từ container ra máy host
+    volumes:
+      - mongo_data:/data/db # lưu trữ dữ liệu MongoDB để không bị mất khi container tắt
+
+volumes:
+  mongo_data:

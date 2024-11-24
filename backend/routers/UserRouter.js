@@ -102,7 +102,7 @@ Router.post('/register', registerValidator, (req, res) => {
                 return newUser.save();
             })
             .then(() => {
-                return res.redirect('/users/login'); // Chuyển đến trang login
+                return res.redirect('/users/login');
             })
             .catch((e) => {
                 return res.render('register', {
