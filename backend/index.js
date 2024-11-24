@@ -5,9 +5,9 @@ const cors = require('cors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 
-const ProductRouter = require('./routers/ProductRouter');
-const TransactionDetailRouter = require('./routers/TransactionDetailRouter');
-const TransactionRouter = require('./routers/TransactionRouter');
+// const ProductRouter = require('./routers/ProductRouter');
+// const TransactionDetailRouter = require('./routers/TransactionDetailRouter');
+// const TransactionRouter = require('./routers/TransactionRouter');
 const UserRouter = require('./routers/UserRouter');
 
 const app = express();
@@ -19,10 +19,10 @@ app.use(cookieParser());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-app.use('/products', ProductRouter);
-app.use('/transactions', TransactionRouter);
+// app.use('/products', ProductRouter);
+// app.use('/transactions', TransactionRouter);
 app.use('/users', UserRouter);
-app.use('/transactionDetails', TransactionDetailRouter);
+// app.use('/transactionDetails', TransactionDetailRouter);
 
 const port = process.env.PORT || 8080;
 const CONNECTION_STRING = process.env.CONNECTION_STRING;
