@@ -15,55 +15,49 @@ Router.get('/login', (req, res) => {
 
 Router.post('/login', loginValidator, (req, res) => {
     let result = validationResult(req);
+
     if (result.errors.length === 0) {
         let { email, password } = req.body;
 
-        User.findOne({ email: email.toLowerCase() }) // Tìm kiếm bằng email (chuyển thành chữ thường)
+        User.findOne({ email: email.toLowerCase() })
             .then((user) => {
                 if (!user) {
-                    throw new Error('Email không tồn tại');
+                    return res.render('login', { errorMessage: 'Email không tồn tại' });
                 }
-                return bcryptjs.compare(password, user.password) 
-                    .then((passwordMatch) => {
-                        if (!passwordMatch) {
-                            return res.status(401).json({
-                                code: 3,
-                                message: 'Đăng nhập thất bại, mật khẩu không chính xác',
-                            });
+
+                return bcryptjs.compare(password, user.password).then((passwordMatch) => {
+                    if (!passwordMatch) {
+                        return res.render('login', {
+                            errorMessage: 'Đăng nhập thất bại, mật khẩu không chính xác',
+                        });
+                    }
+
+                    const { JWT_SECRET } = process.env;
+                    jwt.sign(
+                        {
+                            id: user._id,
+                            email: user.email,
+                            role: user.role,
+                        },
+                        JWT_SECRET,
+                        { expiresIn: '1h' },
+                        (err, token) => {
+                            if (err) throw err;
+
+                            res.cookie('userDataLogin', token, { httpOnly: true, secure: false });
+                            res.cookie('userRole', user.role, { httpOnly: true, secure: false });
+
+                            return res.redirect('/products');
                         }
-
-                        const { JWT_SECRET } = process.env;
-                        jwt.sign(
-                            {
-                                id: user._id,
-                                email: user.email,
-                                role: user.role
-                            },
-                            JWT_SECRET,
-                            { expiresIn: '1h' },
-                            (err, token) => {
-                                if (err) throw err;
-
-                                res.cookie('userDataLogin', token, { httpOnly: true, secure: false });
-                                res.cookie('userRole', user.role, { httpOnly: true, secure: false });
-
-                                return res.redirect('/products');
-                            }
-                        );
-                    });
+                    );
+                });
             })
             .catch((e) => {
-                return res.status(401).json({ code: 2, message: 'Đăng nhập thất bại: ' + e.message });
+                return res.render('login', { errorMessage: `Đăng nhập thất bại: ${e.message}` });
             });
     } else {
-        let messages = result.mapped();
-        let message = '';
-        for (let m in messages) {
-            message = messages[m].msg;
-            break;
-        }
-
-        return res.status(400).json({ code: 1, message: message });
+        let message = Object.values(result.mapped())[0].msg;
+        return res.render('login', { errorMessage: message });
     }
 });
 
