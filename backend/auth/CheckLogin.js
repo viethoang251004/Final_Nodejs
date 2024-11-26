@@ -20,16 +20,16 @@ module.exports = (req, res, next) => {
     // console.log('Check token after: ', token)
     if (!userToken) {
         return res.status(401)
-        .json({code: 101, message: 'Vui lòng cung cấp jwt token hợp lệ'})
+            .json({code: 101, message: 'Vui lòng cung cấp jwt token hợp lệ'})
     }
 
     // const {token} = req.body
     const {JWT_SECRET} = process.env
-    
+
     jwt.verify(userToken, JWT_SECRET, (err, data) => {
         if (err) {
             return res.status(401)
-            .json({code: 101, message: 'Token không hợp lệ hoặc đã hết hạn'})
+                .json({code: 101, message: 'Token không hợp lệ hoặc đã hết hạn'})
         }
         // Nếu kiểm tra thành công, thêm token vào header
         req.headers.authorization = `Bearer ${userToken}`;

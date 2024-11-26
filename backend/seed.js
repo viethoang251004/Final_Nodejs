@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
+const bcryptjs = require('bcryptjs');
 
 const CONNECTION_STRING = process.env.CONNECTION_STRING;
 
@@ -18,6 +19,7 @@ connectWithRetry();
 
 const Category = require('./models/CategoryModel');
 const Product = require('./models/ProductModel');
+const User = require('./models/UserModel');
 
 const categories = [
     { name: 'Điện thoại', slug: 'dien-thoai', description: 'Các sản phẩm điện thoại thông minh' },
@@ -37,6 +39,7 @@ async function seedDatabase() {
         console.log('Clearing old data...');
         await Category.deleteMany({});
         await Product.deleteMany({});
+        await User.deleteMany({}); // Xóa tất cả dữ liệu cũ trong bảng User
 
         console.log('Seeding categories...');
         await Category.insertMany(categories);
@@ -60,6 +63,23 @@ async function seedDatabase() {
             },
         ];
         await Product.insertMany(products);
+
+        console.log('Seeding admin account...');
+        const hashedPassword = await bcryptjs.hash('admin@123', 10); // Hash mật khẩu
+        const adminUser = new User({
+            name: 'Admin',
+            email: 'admin@gmail.com',
+            password: hashedPassword,
+            role: 'ADMIN', // Gán role là ADMIN
+            addresses: [],
+            social_auth: {},
+            points: 0,
+            created_at: new Date(),
+            updated_at: new Date(),
+        });
+
+        await adminUser.save();
+        console.log('Admin account created successfully.');
 
         console.log('Seeding completed.');
         mongoose.disconnect();

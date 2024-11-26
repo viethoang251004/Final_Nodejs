@@ -105,6 +105,4 @@ router.delete('/coupons/:id', CheckAdminAccess, async (req, res) => {
     }
 });
 
-
-
 module.exports = router;

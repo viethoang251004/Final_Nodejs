@@ -65,8 +65,6 @@ Router.get('/', CheckRole, allProductLimiter, async (req, res) => {
     }
 });
 
-
-
 Router.post('/add', CheckLogin, CheckRole, upload.array('images', 5), addProductValidator, async (req, res) => {
     try {
         const errors = validationResult(req);
