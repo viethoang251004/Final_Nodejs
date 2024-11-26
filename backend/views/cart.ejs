@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng - PhoneShop</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Giỏ hàng của bạn</h1>
+
+        <% if (cartItems.length > 0) { %>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                        <th>Tổng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% cartItems.forEach(item => { %>
+                        <tr>
+                            <td><img src="<%= item.product.images[0] %>" alt="<%= item.product.name %>" style="max-height: 100px;"></td>
+                            <td><%= item.product.name %></td>
+                            <td><%= item.quantity %></td>
+                            <td><%= item.product.price.toLocaleString() %> VND</td>
+                            <td><%= (item.quantity * item.product.price).toLocaleString() %> VND</td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-between align-items-center">
+                <h4>Tổng tiền: <%= total.toLocaleString() %> VND</h4>
+                <a href="/checkout" class="btn btn-primary">Thanh toán</a>
+            </div>
+        <% } else { %>
+            <p>Giỏ hàng của bạn hiện đang trống.</p>
+        <% } %>
+    </div>
+</body>
+</html>
