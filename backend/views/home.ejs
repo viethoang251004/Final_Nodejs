@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhoneShop - Trang chủ</title>
+    <link
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        .navbar {
+            background-color: #ff6b6b;
+        }
+
+        .navbar a {
+            color: #fff !important;
+            font-weight: bold;
+        }
+
+        .hero-banner {
+            background: url('https://via.placeholder.com/1920x400') no-repeat center center;
+            background-size: cover;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-banner h1 {
+            font-size: 3rem;
+        }
+
+        .product-card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+
+        .product-card img {
+            max-height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .product-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .product-price {
+            color: #ff6b6b;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .category-title {
+            margin: 40px 0 20px;
+            font-weight: bold;
+            color: #333;
+            border-left: 5px solid #ff6b6b;
+            padding-left: 10px;
+        }
+
+        .coupon-banner {
+            background-color: #ffe6e6;
+            padding: 20px;
+            border: 2px dashed #ff6b6b;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .coupon-banner h4 {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .notification {
+            margin-top: 20px;
+            background-color: #fff3cd;
+            border-left: 4px solid #ffeeba;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+        <a class="navbar-brand" href="#">PhoneShop</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <% if (user) { %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/profile">Xin chào, <%= user.name %></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/logout">Đăng xuất</a>
+                    </li>
+                <% } else { %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/login">Đăng nhập</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/register">Đăng ký</a>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+    </nav>      
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <h1>Chào mừng đến với PhoneShop</h1>
+    </div>
+
+    <div class="container">
+        <!-- Notifications -->
+        <% if (notifications && notifications.length > 0) { %>
+            <% notifications.forEach(notification => { %>
+                <div class="notification">
+                    <p><%= notification.message %></p>
+                </div>
+            <% }); %>
+        <% } %>
+
+        <!-- Coupons -->
+        <% if (coupon) { %>
+            <div class="alert alert-success text-center">
+                <h4>Giảm giá lên đến <%= coupon.discount %>% với mã: <strong><%= coupon.code %></strong></h4>
+                <p>Hạn sử dụng: <%= new Date(coupon.expires_at).toLocaleDateString() %></p>
+            </div>
+        <% } else { %>
+            <div class="alert alert-warning text-center">
+                <h4>Hiện tại không có mã giảm giá nào.</h4>
+            </div>
+        <% } %>
+        
+
+        <!-- Featured Categories -->
+        <% categories.forEach(category => { %>
+            <h2 class="category-title"><%= category.name %></h2>
+            <div class="row">
+                <% category.products.forEach(product => { %>
+                    <div class="col-md-3">
+                        <div class="card product-card">
+                            <img src="<%= product.images[0] %>" alt="<%= product.name %>" class="card-img-top" />
+                            <div class="card-body text-center">
+                                <p class="product-title"><%= product.name %></p>
+                                <p class="product-price"><%= product.price %> VND</p>
+                                <a href="/products/<%= product._id %>" class="btn btn-sm btn-primary">Chi tiết</a>
+                                <form action="/cart/add" method="POST" class="d-inline">
+                                    <input type="hidden" name="product_id" value="<%= product._id %>">
+                                    <button type="submit" class="btn btn-sm btn-buy-now">Mua ngay</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% }) %>
+
+        <div class="container mt-4">
+            <% categories.forEach(category => { %>
+                <h2 class="category-title"><%= category.name %></h2>
+                <div class="row">
+                    <% category.products.forEach(product => { %>
+                        <div class="col-md-3">
+                            <div class="card product-card">
+                                <img src="<%= product.images[0] %>" alt="<%= product.name %>" class="card-img-top" />
+                                <div class="card-body text-center">
+                                    <p class="product-title"><%= product.name %></p>
+                                    <p class="product-price"><%= product.price.toLocaleString() %> VND</p>
+                                    <a href="/products/<%= product._id %>" class="btn btn-sm btn-primary">Chi tiết</a>
+                                    <form action="/cart/add" method="POST" class="d-inline">
+                                        <input type="hidden" name="product_id" value="<%= product._id %>">
+                                        <button type="submit" class="btn btn-sm btn-buy-now">Mua ngay</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% }); %>
+        </div>        
+        
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
