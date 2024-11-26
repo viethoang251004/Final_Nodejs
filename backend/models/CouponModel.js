@@ -1,20 +1,31 @@
+// Sửa CouponModel.js
 const mongoose = require('mongoose');
 
 const CouponSchema = new mongoose.Schema({
-  type: {
-    type: String,
-    required: true,
-    enum: ['sales', 'users', 'products'], // Giới hạn giá trị loại coupon
-  },
-  data: {
-    type: Map, // Map cho phép lưu dữ liệu key-value tùy biến
-    of: mongoose.Schema.Types.Mixed, // Mixed cho phép bất kỳ kiểu dữ liệu nào
-    required: true,
-  },
-  created_at: {
-    type: Date,
-    default: Date.now,
-  },
+    code: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
+    discount: {
+        type: Number,
+        required: true,
+        min: 1, // Giảm ít nhất 1%
+        max: 100 // Không giảm quá 100%
+    },
+    expires_at: {
+        type: Date,
+        required: true
+    },
+    is_active: {
+        type: Boolean,
+        default: true
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 module.exports = mongoose.model('Coupon', CouponSchema);
