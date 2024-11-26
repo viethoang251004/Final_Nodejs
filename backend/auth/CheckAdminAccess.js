@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
         // console.log(isAdmin)
 
         // Check user permissions
-        if (isAdmin.localeCompare('Admin') === 0) {
+        if (isAdmin.localeCompare('ADMIN') === 0) {
             next(); // If admin, continue processing the request
         } else {
             res.status(403).json({ code: 403, message: 'Không có quyền truy cập.' });
