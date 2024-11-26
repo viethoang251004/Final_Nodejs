@@ -9,6 +9,11 @@ const cookieParser = require('cookie-parser');
 // const TransactionDetailRouter = require('./routers/TransactionDetailRouter');
 // const TransactionRouter = require('./routers/TransactionRouter');
 const UserRouter = require('./routers/UserRouter');
+const HomeRouter = require('./routers/HomeRouter');
+const CartRouter = require('./routers/CartRouter');
+const AdminRouter = require('./routers/AdminRouter');
+const ProductRouter = require('./routers/ProductRouter');
+// const OrderRouter = require('./routers/OrderRouter');
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
@@ -16,16 +21,25 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
+// Serve static files from the "public" directory
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// app.use('/products', ProductRouter);
 // app.use('/transactions', TransactionRouter);
+app.use('/', HomeRouter);
 app.use('/users', UserRouter);
+app.use('/cart', CartRouter);
+app.use('/admin', AdminRouter);
+app.use('/products', ProductRouter);
+app.use('/admin', AdminRouter);
+// app.use('/order', OrderRouter);
 // app.use('/transactionDetails', TransactionDetailRouter);
 
 const port = process.env.PORT || 8080;
 const CONNECTION_STRING = process.env.CONNECTION_STRING;
+
 
 // Kiểm tra biến môi trường
 if (!CONNECTION_STRING) {
