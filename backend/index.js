@@ -46,7 +46,6 @@ app.use('/orders', OrderRouter);
 const port = process.env.PORT || 8080;
 const CONNECTION_STRING = process.env.CONNECTION_STRING;
 
-// Kiểm tra biến môi trường
 if (!CONNECTION_STRING) {
     console.error("Error: CONNECTION_STRING is not defined in the environment variables.");
     process.exit(1);

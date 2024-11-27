@@ -6,15 +6,8 @@ const OrderModel = require('../models/OrderModel');
 const CouponModel = require('../models/CouponModel');
 const AnalyticsModel = require('../models/AnalyticsModel');
 
-// Thay đổi import middleware
 const CheckAdminAccess = require('../auth/CheckAdminAccess');
 
-// router.get('/dashboard', CheckAdminAccess, async (req, res) => {
-//     const analytics = await AnalyticsModel.find();
-//     res.render('dashboard', { analytics });
-// });
-
-// Bảng điều khiển admin
 router.get('/dashboard', CheckAdminAccess, async (req, res) => {
     try {
         const totalUsers = await UserModel.countDocuments();
@@ -34,7 +27,6 @@ router.get('/dashboard', CheckAdminAccess, async (req, res) => {
     }
 });
 
-// Quản lý sản phẩm
 router.get('/products', CheckAdminAccess, async (req, res) => {
     const { page = 1, limit = 10, search = '' } = req.query;
 
@@ -59,7 +51,6 @@ router.get('/products', CheckAdminAccess, async (req, res) => {
     }
 });
 
-// Quản lý đơn hàng
 router.get('/orders', CheckAdminAccess, async (req, res) => {
     try {
         const orders = await OrderModel.find().populate('user_id');
@@ -71,7 +62,6 @@ router.get('/orders', CheckAdminAccess, async (req, res) => {
     }
 });
 
-// Quản lý mã giảm giá
 router.get('/coupons', CheckAdminAccess, async (req, res) => {
     try {
         const coupons = await CouponModel.find().sort({ created_at: -1 });

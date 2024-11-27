@@ -131,13 +131,22 @@
             <tbody>
             <% cartItems.forEach(item => { %>
                 <tr>
-                    <td><img src="<%= item.product.images[0] || '/default-image.jpg' %>" alt="<%= item.product.name %>"
-                             style="max-height: 100px;"/></td>
-                    <td><%= item.product.name %></td>
+                    <td><img src="<%= item.product.images[0] || '/default-image.jpg' %>" alt="<%= item.product.name %>" style="max-height: 100px;" /></td>
+                    <td>
+                        <%= item.product.name %>
+                        <br>
+                        <% if (item.variant) { %>
+                            <small>Biến thể: Màu <%= item.variant.color %>, Kích thước <%= item.variant.size %></small>
+                        <% } else { %>
+                            <small>Biến thể không tồn tại.</small>
+                        <% } %>
+                    </td>
+
                     <td><%= item.quantity %></td>
                     <td><%= item.product.price.toLocaleString() %> VND</td>
                     <td><%= (item.quantity * item.product.price).toLocaleString() %> VND</td>
                 </tr>
+
             <% }); %>
             </tbody>
         </table>

@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const CategoryModel = require('../models/CategoryModel');
 const ProductModel = require('../models/ProductModel');
+const authMiddleware = require('../auth/authMiddleware');
+
+router.use(authMiddleware);
 
 // Trang chủ
 router.get('/', async (req, res) => {
