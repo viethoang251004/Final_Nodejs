@@ -81,7 +81,6 @@ router.post('/coupons', CheckAdminAccess, async (req, res) => {
     try {
         const existingCoupon = await CouponModel.findOne({ code });
         if (existingCoupon) {
-            // Nếu mã giảm giá đã tồn tại, trả về thông báo lỗi
             return res.render('couponManagement', {
                 message: 'Mã giảm giá đã tồn tại!',
                 coupons: await CouponModel.find().sort({ created_at: -1 })
