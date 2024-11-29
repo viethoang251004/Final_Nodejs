@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 module.exports = (req, res, next) => {
     try {
         const userRole = req.cookies.userRole;
@@ -9,12 +8,13 @@ module.exports = (req, res, next) => {
     } catch (error) {
         console.error('Error in CheckAdminAccess middleware:', error);
         res.status(500).json({ message: 'Đã xảy ra lỗi khi kiểm tra quyền truy cập.' });
-=======
+    }
+}
 module.exports = async (req, res, next) => {
     try {
         // const userDataLogin = req.cookies.userDataLogin;
         const isAdmin = req.cookies.userRole
-         console.log(req.cookies);
+        console.log(req.cookies);
         // console.log('userData retrieved from cookie:', userDataLogin);
 
         // if (!userDataLogin) {
@@ -32,6 +32,6 @@ module.exports = async (req, res, next) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ code: 500, message: 'Lỗi máy chủ nội bộ.' });
->>>>>>> master
+
     }
 };
