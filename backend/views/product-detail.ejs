@@ -1,0 +1,12 @@
+<div class="container mt-4">
+    <h1><%= product.name %></h1>
+    <p><%= product.description %></p>
+    <p>Giá: <span class="text-success"><%= product.price.toLocaleString() %> VND</span></p>
+    <h3>Các biến thể</h3>
+    <ul>
+        <% product.variants.forEach(variant => { %>
+            <li>Màu: <%= variant.color %>, Kích thước: <%= variant.size %>, Tồn kho: <%= variant.stock %></li>
+        <% }); %>
+    </ul>
+    <a href="/" class="btn btn-primary">Quay lại</a>
+</div>

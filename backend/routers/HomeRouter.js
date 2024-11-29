@@ -6,7 +6,6 @@ const authMiddleware = require('../auth/authMiddleware');
 
 router.use(authMiddleware);
 
-// Trang chủ
 router.get('/', async (req, res) => {
     try {
         const { page = 1, limit = 10, search = '', sort = 'name', category = '' } = req.query;
