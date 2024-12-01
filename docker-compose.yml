@@ -13,6 +13,8 @@ services:
       - CONNECTION_STRING=mongodb://database:27017/ePhoneShop
     depends_on:
       - database
+    command: >
+      sh -c "node seed.js && node index.js"
 
   database:
     image: mongo:6
