@@ -20,13 +20,7 @@
    docker-compose up
    ```
 
-4. **Set Default Data for the Database**  
-   Go back to the *backend* folder and execute the following command to populate the database with default data:
-   ```bash
-   node seed.js
-   ```
-
-5. **Access the Login Page**  
+4. **Access the Login Page**  
    Once the setup is complete, open your browser and go to the following URL to access the login page:  
    [http://localhost:8080/](http://localhost:8080/)
 
