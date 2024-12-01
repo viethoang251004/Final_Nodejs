@@ -7,8 +7,9 @@ const CouponModel = require('../models/CouponModel');
 const AnalyticsModel = require('../models/AnalyticsModel');
 
 const CheckAdminAccess = require('../auth/CheckAdminAccess');
+const CheckLogin = require('../auth/CheckLogin');
 
-router.get('/dashboard', CheckAdminAccess, async (req, res) => {
+router.get('/', CheckLogin, CheckAdminAccess, async (req, res) => {
     try {
         const totalUsers = await UserModel.countDocuments();
         const totalOrders = await OrderModel.countDocuments();
@@ -16,7 +17,10 @@ router.get('/dashboard', CheckAdminAccess, async (req, res) => {
             { $group: { _id: null, total: { $sum: '$total_price' } } },
         ]);
 
-        res.render('dashboard', {
+        res.render('layouts/main', {
+            title: 'Admin Dashboard',
+            body: 'dashboard',
+            style: 'dashboard-style',
             totalUsers,
             totalOrders,
             totalRevenue: totalRevenue[0]?.total || 0,
@@ -27,7 +31,7 @@ router.get('/dashboard', CheckAdminAccess, async (req, res) => {
     }
 });
 
-router.get('/products', CheckAdminAccess, async (req, res) => {
+router.get('/products', CheckLogin, CheckAdminAccess, async (req, res) => {
     const { page = 1, limit = 10, search = '' } = req.query;
 
     try {
@@ -51,7 +55,7 @@ router.get('/products', CheckAdminAccess, async (req, res) => {
     }
 });
 
-router.get('/orders', CheckAdminAccess, async (req, res) => {
+router.get('/orders', CheckLogin, CheckAdminAccess, async (req, res) => {
     try {
         const orders = await OrderModel.find().populate('user_id');
 
@@ -62,7 +66,7 @@ router.get('/orders', CheckAdminAccess, async (req, res) => {
     }
 });
 
-router.get('/coupons', CheckAdminAccess, async (req, res) => {
+router.get('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
     try {
         const coupons = await CouponModel.find().sort({ created_at: -1 });
         res.render('couponManagement', { coupons });
@@ -72,7 +76,7 @@ router.get('/coupons', CheckAdminAccess, async (req, res) => {
     }
 });
 
-router.post('/coupons', CheckAdminAccess, async (req, res) => {
+router.post('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
     const { code, discount, expires_at } = req.body;
     try {
         const coupon = new CouponModel({ code, discount, expires_at });
@@ -84,7 +88,7 @@ router.post('/coupons', CheckAdminAccess, async (req, res) => {
     }
 });
 
-router.delete('/coupons/:id', CheckAdminAccess, async (req, res) => {
+router.delete('/coupons/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
     try {
         const { id } = req.params;
         await CouponModel.findByIdAndDelete(id);
