@@ -1,0 +1,97 @@
+/* Default style */
+body {
+    background-color: #f8f9fa;
+    color: #000;
+}
+/* Admin page style */
+.dashboard-style {
+    body {
+        background-color: #f8f9fa;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    }
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .card-text {
+        font-size: 1.2rem;
+    }
+    .bg-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+    }
+    .bg-success {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+    }
+    .bg-warning {
+        background: linear-gradient(135deg, #ffc107, #e0a800);
+    }
+}
+/* Cart page style */
+.productManagement-style {
+    body {
+        background-color: #f8f9fa;
+    }
+
+    h1 {
+        color: #343a40;
+        font-weight: bold;
+    }
+
+    .table thead {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #f1f1f1;
+    }
+
+    .btn-primary,
+    .btn-success {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .modal-footer button {
+        transition: all 0.3s ease;
+    }
+
+    .modal-footer button:hover {
+        transform: scale(1.05);
+    }
+
+    #addVariantBtn {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    #addVariantBtn:hover {
+        background-color: #138496;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .action-buttons a,
+    .action-buttons button {
+        margin-right: 5px;
+    }
+}
+/* Profile page style */
+.profile-style {
+    background-color: #ffc107;
+    color: #333;
+}
