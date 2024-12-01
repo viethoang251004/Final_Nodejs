@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 8080
 
 # Chạy ứng dụng
-CMD ["node", "index.js"]
+CMD ["npm", "index.js"]
