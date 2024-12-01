@@ -2,75 +2,43 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const bcryptjs = require('bcryptjs');
 
-const CONNECTION_STRING = process.env.CONNECTION_STRING;
+const CONNECTION_STRING = process.env.CONNECTION_STRING || 'mongodb://database:27017/ePhoneShop';
 
-async function connectWithRetry() {
+async function connectDatabase() {
     try {
-        console.log('Trying to connect to MongoDB...');
-        await mongoose.connect(CONNECTION_STRING, { dbName: 'ePhoneShop' });
-        console.log('MongoDB connected!');
+        console.log('Connecting to MongoDB...');
+        await mongoose.connect(CONNECTION_STRING, {
+            dbName: 'ePhoneShop',
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log('MongoDB connected successfully!');
     } catch (error) {
-        console.error('MongoDB connection failed, retrying in 5 seconds...', error.message);
-        setTimeout(connectWithRetry, 5000); // Retry sau 5 giây
+        console.error('MongoDB connection failed:', error.message);
+        process.exit(1); // Thoát chương trình với mã lỗi
     }
 }
 
-connectWithRetry();
-
-const Category = require('./models/CategoryModel');
-const Product = require('./models/ProductModel');
 const User = require('./models/UserModel');
 
-const categories = [
-    { name: 'Điện thoại', slug: 'dien-thoai', description: 'Các sản phẩm điện thoại thông minh' },
-    { name: 'Laptop', slug: 'laptop', description: 'Các sản phẩm laptop cao cấp' },
-    { name: 'Phụ kiện', slug: 'phu-kien', description: 'Các loại phụ kiện' },
-];
-
-const sizes = Array.from({ length: 6 }, (_, i) => (4.0 + i * 0.5).toFixed(2));
-const colors = [
-    'Red', 'Blue', 'Green', 'Yellow', 'Black', 'White',
-    'Pink', 'Purple', 'Brown', 'Orange', 'Cyan', 'Magenta',
-    'Grey', 'Teal', 'Lime', 'Maroon',
-];
-
-async function seedDatabase() {
+async function seedAdminAccount() {
     try {
-        console.log('Clearing old data...');
-        await Category.deleteMany({});
-        await Product.deleteMany({});
-        await User.deleteMany({}); // Xóa tất cả dữ liệu cũ trong bảng User
-
-        console.log('Seeding categories...');
-        await Category.insertMany(categories);
-
-        console.log('Seeding products...');
-        const products = [
-            {
-                name: 'Product A',
-                description: 'Description for Product A',
-                price: 10000,
-                images: ['/uploads/product_a.jpg'],
-                category: 'category-slug',
-                tags: ['tag1', 'tag2'],
-                variants: sizes.flatMap(size =>
-                    colors.map(color => ({
-                        size,
-                        color,
-                        stock: Math.floor(Math.random() * 50) + 1,
-                    }))
-                ),
-            },
-        ];
-        await Product.insertMany(products);
-
         console.log('Seeding admin account...');
-        const hashedPassword = await bcryptjs.hash('admin@123', 10); // Hash mật khẩu
+
+        // Kiểm tra nếu tài khoản admin đã tồn tại
+        const existingAdmin = await User.findOne({ email: 'admin@gmail.com' });
+        if (existingAdmin) {
+            console.log('Admin account already exists. Skipping seeding.');
+            return;
+        }
+
+        const hashedPassword = await bcryptjs.hash('admin@123', 10);
+
         const adminUser = new User({
             name: 'Admin',
             email: 'admin@gmail.com',
             password: hashedPassword,
-            role: 'ADMIN', // Gán role là ADMIN
+            role: 'ADMIN',
             addresses: [],
             social_auth: {},
             points: 0,
@@ -79,14 +47,19 @@ async function seedDatabase() {
         });
 
         await adminUser.save();
-        console.log('Admin account created successfully.');
-
-        console.log('Seeding completed.');
-        mongoose.disconnect();
+        console.log('Admin account created successfully!');
     } catch (error) {
-        console.error('Error seeding data:', error.message);
-        mongoose.disconnect();
+        console.error('Error seeding admin account:', error.message);
+        process.exit(1); // Thoát chương trình nếu seed thất bại
     }
 }
 
-seedDatabase();
+async function main() {
+    await connectDatabase();
+    await seedAdminAccount();
+    mongoose.disconnect();
+    console.log('Seeding process completed.');
+    process.exit(0);
+}
+
+main();
