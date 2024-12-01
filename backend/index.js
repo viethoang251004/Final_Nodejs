@@ -29,6 +29,7 @@ app.use(session({
 
 // Serve static files from the "public" directory
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
