@@ -106,7 +106,7 @@ Router.get('/', CheckLogin, CheckRole, async (req, res) => {
         const totalOrders = await Order.countDocuments(); // Tổng số đơn hàng
         const totalPages = Math.ceil(totalOrders / limit); // Tổng số trang
 
-        res.render('order-list', {
+        res.render('order-history', {
             orders,
             currentPage: parseInt(page),
             totalPages,
