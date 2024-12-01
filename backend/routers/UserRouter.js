@@ -51,7 +51,7 @@ Router.post('/login', loginValidator, (req, res) => {
 
                             // Chuyển hướng dựa trên vai trò
                             if (user.role === 'ADMIN') {
-                                return res.redirect('/admin/dashboard'); // Admin chuyển hướng đến dashboard
+                                return res.redirect('/admin'); // Admin chuyển hướng đến dashboard
                             } else {
                                 return res.redirect('/'); // Người dùng bình thường về trang chính
                             }
