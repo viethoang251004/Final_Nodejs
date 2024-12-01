@@ -1,0 +1,267 @@
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Quản lý sản phẩm</h1>
+
+    <!-- Button to open modal for adding a product -->
+    <div class="d-flex justify-content-between mb-4">
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addProductModal">
+            <i class="bi bi-plus-circle"></i> Thêm sản phẩm mới
+        </button>
+        <button id="addCategoryBtn" class="btn btn-primary" data-toggle="modal" data-target="#addCategoryModal">
+            <i class="bi bi-folder-plus"></i> Thêm danh mục
+        </button>
+    </div>
+
+    <!-- Product table -->
+    <div class="table-responsive">
+        <table class="table table-bordered text-center">
+            <thead>
+            <tr>
+                <th>Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Giá</th>
+                <th>Danh mục</th>
+                <th>Tồn kho</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% products.forEach(product => { %>
+                <tr>
+                    <td>
+                        <% if (product.images && product.images.length > 0) { %>
+                            <img src="<%= product.images[0] %>" alt="Product Image"
+                                 class="img-fluid" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                        <% } else { %>
+                            <img src="/path/to/placeholder-image.jpg" alt="No Image"
+                                 class="img-fluid" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                        <% } %>
+                    </td>
+                    <td><%= product.name %></td>
+                    <td class="text-right"><%= product.price.toLocaleString() %> VND</td>
+                    <td><%= product.category %></td>
+                    <td>
+                        <% let totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0); %>
+                        <%= totalStock %>
+                    </td>
+                    <td class="action-buttons">
+                        <a href="javascript:void(0)" class="btn btn-warning btn-sm"
+                           onclick="openEditModal('<%= product._id %>')">
+                            <i class="bi bi-pencil-square"></i> Sửa
+                        </a>
+                        <form action="/products/delete/<%= product._id %>" method="POST" class="d-inline">
+                            <button type="button" class="btn btn-danger btn-sm"
+                                    onclick="confirmDelete('<%= product._id %>')">
+                                <i class="bi bi-trash"></i> Xóa
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for adding a product -->
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form method="POST" action="/products/add" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm sản phẩm mới</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name">Tên sản phẩm</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="price">Giá</label>
+                            <input type="number" class="form-control" id="price" name="price" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category">Danh mục</label>
+                        <select class="form-control" id="category" name="category" required>
+                            <option value="">Chọn danh mục</option>
+                            <% if (categories && categories.length) { %>
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category.slug %>"><%= category.name %></option>
+                                <% }); %>
+                            <% } else { %>
+                                <option value="">Không có danh mục</option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description">Mô tả</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="images">Hình ảnh</label>
+                        <input type="file" class="form-control-file" id="images" name="images" multiple>
+                    </div>
+                    <div class="mb-3">
+                        <label for="variants">Biến thể</label>
+                        <div id="variantContainer">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="size">Size</label>
+                                    <select class="form-control" name="variants[0][size]" required>
+                                        <option value="">Chọn size</option>
+                                        <% for (let i = 4.0; i <= 6.81; i += 0.1) { %>
+                                            <option value="<%= i.toFixed(2) %>"><%= i.toFixed(2) %></option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="color">Màu</label>
+                                    <select class="form-control" name="variants[0][color]" required>
+                                        <option value="">Chọn màu</option>
+                                        <% colors.forEach(color => { %>
+                                            <option value="<%= color %>"><%= color %></option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="stock">Tồn kho</label>
+                                    <input type="number" class="form-control" name="variants[0][stock]" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-info mt-3" id="addVariantBtn">Thêm biến thể</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for editing a product -->
+<div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form method="POST" action="/products/edit/<%= editProduct ? editProduct._id : '' %>" enctype="multipart/form-data" id="editProductForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chỉnh sửa sản phẩm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editName">Tên sản phẩm</label>
+                        <input type="text" class="form-control" id="editName" name="name" value="<%= editProduct ? editProduct.name : '' %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPrice">Giá</label>
+                        <input type="number" class="form-control" id="editPrice" name="price" value="<%= editProduct ? editProduct.price : '' %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCategory">Danh mục</label>
+                        <select class="form-control" id="editCategory" name="category" required>
+                            <% categories.forEach(category => { %>
+                                <option value="<%= category.slug %>" <%= editProduct && editProduct.category === category.slug ? 'selected' : '' %>><%= category.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Mô tả</label>
+                        <textarea class="form-control" id="editDescription" name="description" rows="3"><%= editProduct ? editProduct.description : '' %></textarea>
+                    </div>
+                    <div id="editVariantContainer"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for adding a category -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="addCategoryForm" action="/products/categories/add" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm danh mục sản phẩm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="categoryName">Tên danh mục</label>
+                        <input type="text" name="name" id="categoryName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categorySlug">Slug</label>
+                        <input type="text" name="slug" id="categorySlug" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryDescription">Mô tả</label>
+                        <textarea name="description" id="categoryDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteProductModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn xóa sản phẩm này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                <button type="button" id="confirmDeleteButton" class="btn btn-danger">Có</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Modal -->
+<div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationModalLabel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="notificationModalBody">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+<script src="/js/product-management.js?v=<%= new Date().getTime() %>"></script>
