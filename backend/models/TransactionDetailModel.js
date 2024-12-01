@@ -5,21 +5,21 @@ const TransactionDetailSchema = new Schema({
     transaction: {
         type: Schema.Types.ObjectId,
         ref: 'Transaction',
-        required: true
+        required: true,
     },
     product: {
         type: Schema.Types.ObjectId,
         ref: 'Product',
-        required: true
+        required: true,
     },
     quantity: {
         type: Number,
-        required: true
+        required: true,
     },
     price: {
         type: Number,
-        required: true
-    }
+        required: true,
+    },
 });
 
 module.exports = mongoose.model('TransactionDetail', TransactionDetailSchema);

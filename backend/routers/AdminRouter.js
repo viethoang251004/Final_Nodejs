@@ -35,9 +35,7 @@ router.get('/products', CheckLogin, CheckAdminAccess, async (req, res) => {
     const { page = 1, limit = 10, search = '' } = req.query;
 
     try {
-        const query = search
-            ? { name: { $regex: search, $options: 'i' } }
-            : {};
+        const query = search ? { name: { $regex: search, $options: 'i' } } : {};
         const products = await ProductModel.find(query)
             .skip((page - 1) * limit)
             .limit(parseInt(limit));
@@ -88,15 +86,22 @@ router.post('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
     }
 });
 
-router.delete('/coupons/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
-    try {
-        const { id } = req.params;
-        await CouponModel.findByIdAndDelete(id);
-        res.status(200).json({ message: 'Mã giảm giá đã được xóa thành công!' });
-    } catch (error) {
-        console.error('Error deleting coupon:', error.message);
-        res.status(500).send('Lỗi khi xóa mã giảm giá.');
-    }
-});
+router.delete(
+    '/coupons/:id',
+    CheckLogin,
+    CheckAdminAccess,
+    async (req, res) => {
+        try {
+            const { id } = req.params;
+            await CouponModel.findByIdAndDelete(id);
+            res.status(200).json({
+                message: 'Mã giảm giá đã được xóa thành công!',
+            });
+        } catch (error) {
+            console.error('Error deleting coupon:', error.message);
+            res.status(500).send('Lỗi khi xóa mã giảm giá.');
+        }
+    },
+);
 
 module.exports = router;

@@ -24,43 +24,56 @@ Router.post('/login', loginValidator, (req, res) => {
         User.findOne({ email: email.toLowerCase() })
             .then((user) => {
                 if (!user) {
-                    return res.render('login', { errorMessage: 'Email không tồn tại' });
+                    return res.render('login', {
+                        errorMessage: 'Email không tồn tại',
+                    });
                 }
 
-                return bcryptjs.compare(password, user.password).then((passwordMatch) => {
-                    if (!passwordMatch) {
-                        return res.render('login', {
-                            errorMessage: 'Đăng nhập thất bại, mật khẩu không chính xác',
-                        });
-                    }
-
-                    const { JWT_SECRET } = process.env;
-                    jwt.sign(
-                        {
-                            id: user._id,
-                            email: user.email,
-                            role: user.role,
-                        },
-                        JWT_SECRET,
-                        { expiresIn: '1h' },
-                        (err, token) => {
-                            if (err) throw err;
-
-                            res.cookie('userDataLogin', token, { httpOnly: true, secure: false });
-                            res.cookie('userRole', user.role, { httpOnly: true, secure: false });
-
-                            // Chuyển hướng dựa trên vai trò
-                            if (user.role === 'ADMIN') {
-                                return res.redirect('/admin'); // Admin chuyển hướng đến dashboard
-                            } else {
-                                return res.redirect('/'); // Người dùng bình thường về trang chính
-                            }
+                return bcryptjs
+                    .compare(password, user.password)
+                    .then((passwordMatch) => {
+                        if (!passwordMatch) {
+                            return res.render('login', {
+                                errorMessage:
+                                    'Đăng nhập thất bại, mật khẩu không chính xác',
+                            });
                         }
-                    );
-                });
+
+                        const { JWT_SECRET } = process.env;
+                        jwt.sign(
+                            {
+                                id: user._id,
+                                email: user.email,
+                                role: user.role,
+                            },
+                            JWT_SECRET,
+                            { expiresIn: '1h' },
+                            (err, token) => {
+                                if (err) throw err;
+
+                                res.cookie('userDataLogin', token, {
+                                    httpOnly: true,
+                                    secure: false,
+                                });
+                                res.cookie('userRole', user.role, {
+                                    httpOnly: true,
+                                    secure: false,
+                                });
+
+                                // Chuyển hướng dựa trên vai trò
+                                if (user.role === 'ADMIN') {
+                                    return res.redirect('/admin'); // Admin chuyển hướng đến dashboard
+                                } else {
+                                    return res.redirect('/'); // Người dùng bình thường về trang chính
+                                }
+                            },
+                        );
+                    });
             })
             .catch((e) => {
-                return res.render('login', { errorMessage: `Đăng nhập thất bại: ${e.message}` });
+                return res.render('login', {
+                    errorMessage: `Đăng nhập thất bại: ${e.message}`,
+                });
             });
     } else {
         let message = Object.values(result.mapped())[0].msg;
@@ -77,7 +90,8 @@ Router.get('/register', (req, res) => {
 Router.post('/register', registerValidator, (req, res) => {
     let result = validationResult(req);
     if (result.errors.length === 0) {
-        let { name, email, password, role, addresses, social_auth, points } = req.body;
+        let { name, email, password, role, addresses, social_auth, points } =
+            req.body;
 
         // Cấm tạo tài khoản ADMIN
         if (role === 'ADMIN') {
@@ -87,11 +101,13 @@ Router.post('/register', registerValidator, (req, res) => {
         }
 
         User.findOne({
-            $or: [{ email: email.toLowerCase() }, { name: name.toLowerCase() }]
+            $or: [{ email: email.toLowerCase() }, { name: name.toLowerCase() }],
         })
             .then((user) => {
                 if (user) {
-                    throw new Error('Tên người dùng hoặc email đã được sử dụng.');
+                    throw new Error(
+                        'Tên người dùng hoặc email đã được sử dụng.',
+                    );
                 }
                 return bcryptjs.hash(password, 10);
             })

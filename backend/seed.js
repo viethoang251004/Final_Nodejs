@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const bcryptjs = require('bcryptjs');
 
-const CONNECTION_STRING = process.env.CONNECTION_STRING || 'mongodb://database:27017/ePhoneShop';
+const CONNECTION_STRING =
+    process.env.CONNECTION_STRING || 'mongodb://database:27017/ePhoneShop';
 
 async function connectDatabase() {
     try {

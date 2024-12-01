@@ -4,37 +4,37 @@ const Schema = mongoose.Schema;
 const AddressSchema = new Schema({
     address_id: {
         type: mongoose.Schema.Types.ObjectId,
-        default: new mongoose.Types.ObjectId()
+        default: new mongoose.Types.ObjectId(),
     },
     full_name: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
     },
     phone: {
         type: String,
-        required: true
+        required: true,
     },
     address: {
         type: String,
-        required: true
+        required: true,
     },
     is_default: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 });
 
 const SocialAuthSchema = new Schema({
     provider: {
         type: String,
         enum: ['google', 'facebook'],
-        required: false
+        required: false,
     },
     id: {
         type: String,
-        required: false
-    }
+        required: false,
+    },
 });
 
 const UserSchema = new Schema({
@@ -42,46 +42,46 @@ const UserSchema = new Schema({
         type: String,
         required: true,
         trim: true,
-        minlength: 3
+        minlength: 3,
     },
     email: {
         type: String,
         required: true,
         trim: true,
         lowercase: true,
-        unique: true
+        unique: true,
     },
     password: {
         type: String,
         required: true,
-        minlength: 6
+        minlength: 6,
     },
     role: {
         type: String,
         enum: ['CUSTOMER', 'ADMIN'],
-        required: true
+        required: true,
     },
     addresses: {
         type: [AddressSchema], // Danh sách địa chỉ
-        default: []
+        default: [],
     },
     social_auth: {
         type: SocialAuthSchema, // Đối tượng xác thực xã hội
-        default: {}
+        default: {},
     },
     points: {
         type: Number,
         default: 0,
-        min: 0 // Điểm thưởng không âm
+        min: 0, // Điểm thưởng không âm
     },
     created_at: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     updated_at: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
 });
 
 // Middleware tự động cập nhật `updated_at` trước khi lưu

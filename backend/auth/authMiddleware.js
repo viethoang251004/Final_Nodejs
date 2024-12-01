@@ -6,7 +6,9 @@ const authMiddleware = async (req, res, next) => {
         const token = req.cookies.userDataLogin;
         if (token) {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = await UserModel.findById(decoded.id).select('name email');
+            req.user = await UserModel.findById(decoded.id).select(
+                'name email',
+            );
         }
     } catch (error) {
         req.user = null; // Nếu không có user, gán là null

@@ -1,7 +1,7 @@
 module.exports = async (req, res, next) => {
     try {
         // const userDataLogin = req.cookies.userDataLogin;
-        const isAdmin = req.cookies.userRole
+        const isAdmin = req.cookies.userRole;
         // console.log('userData retrieved from cookie:', userDataLogin);
 
         // if (!userDataLogin) {
@@ -14,7 +14,10 @@ module.exports = async (req, res, next) => {
         if (isAdmin.localeCompare('ADMIN') === 0) {
             next(); // If admin, continue processing the request
         } else {
-            res.status(403).json({ code: 403, message: 'Không có quyền truy cập.' });
+            res.status(403).json({
+                code: 403,
+                message: 'Không có quyền truy cập.',
+            });
         }
     } catch (error) {
         console.error(error);

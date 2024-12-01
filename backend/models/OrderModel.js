@@ -1,82 +1,88 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const OrderProductSchema = new Schema({
-    product_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true
+const OrderProductSchema = new Schema(
+    {
+        product_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true,
+        },
+        variant_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Variant',
+            required: false,
+        },
+        quantity: {
+            type: Number,
+            required: true,
+            min: 1, // Quantity must be at least 1
+        },
+        price: {
+            type: Number,
+            required: true,
+            min: 0, // Price must be non-negative
+        },
     },
-    variant_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Variant',
-        required: false
-    },
-    quantity: {
-        type: Number,
-        required: true,
-        min: 1 // Quantity must be at least 1
-    },
-    price: {
-        type: Number,
-        required: true,
-        min: 0 // Price must be non-negative
-    }
-}, { _id: false });
+    { _id: false },
+);
 
 // Define the main schema for Order
 const OrderSchema = new Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', // Reference to the User model
-        default: null // Null if the user is a guest
+        default: null, // Null if the user is a guest
     },
     customer_info: {
         full_name: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
         },
         phone: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
         },
         address: {
             type: String,
             required: true,
-            trim: true
-        }
+            trim: true,
+        },
     },
     products: {
         type: [OrderProductSchema], // List of products in the order
         required: true,
-        validate: [array => array.length > 0, 'Order must have at least one product'] // Validate that the order contains at least one product
+        validate: [
+            (array) => array.length > 0,
+            'Order must have at least one product',
+        ], // Validate that the order contains at least one product
     },
     total_price: {
         type: Number,
         required: true,
-        min: 0 // Total price must be non-negative
+        min: 0, // Total price must be non-negative
     },
     status: {
         type: String,
         required: true,
         enum: ['pending', 'confirmed', 'shipping', 'delivered', 'canceled'], // Valid order statuses
-        default: 'pending'
+        default: 'pending',
     },
     discount_code: {
         type: String,
         default: null,
-        trim: true
+        trim: true,
     },
     created_at: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     updated_at: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
 });
 
 // Middleware to automatically update `updated_at` before saving

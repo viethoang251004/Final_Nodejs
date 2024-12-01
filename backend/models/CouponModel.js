@@ -6,26 +6,26 @@ const CouponSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        trim: true
+        trim: true,
     },
     discount: {
         type: Number,
         required: true,
         min: 1, // Giảm ít nhất 1%
-        max: 100 // Không giảm quá 100%
+        max: 100, // Không giảm quá 100%
     },
     expires_at: {
         type: Date,
-        required: true
+        required: true,
     },
     is_active: {
         type: Boolean,
-        default: true
+        default: true,
     },
     created_at: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
 });
 
 module.exports = mongoose.model('Coupon', CouponSchema);

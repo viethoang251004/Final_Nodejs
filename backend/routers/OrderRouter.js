@@ -12,13 +12,13 @@ const Order = require('../models/OrderModel');
 const allOrderLimiter = rateLimit({
     windowMs: 10 * 1000, // 10s
     max: 5,
-    message: "Không thể gửi quá 5 request trong 10s khi đọc danh sách order"
+    message: 'Không thể gửi quá 5 request trong 10s khi đọc danh sách order',
 });
 
 const detailOrderLimiter = rateLimit({
     windowMs: 10 * 1000, // 10s
     max: 2,
-    message: "Không thể gửi quá 2 request trong 10s khi đọc chi tiết order"
+    message: 'Không thể gửi quá 2 request trong 10s khi đọc chi tiết order',
 });
 
 // Middleware to check ADMIN access
@@ -27,10 +27,13 @@ Router.use(CheckLogin, CheckRole);
 // Tạo đơn hàng (sau khi thanh toán thành công)
 Router.post('/create', CheckLogin, CheckRole, async (req, res) => {
     try {
-        const { customer_info, products, total_price, shipping_option } = req.body;
+        const { customer_info, products, total_price, shipping_option } =
+            req.body;
 
         if (!products || products.length === 0) {
-            return res.status(400).json({ error: 'Cần ít nhất một sản phẩm trong đơn hàng.' });
+            return res
+                .status(400)
+                .json({ error: 'Cần ít nhất một sản phẩm trong đơn hàng.' });
         }
 
         const order = new Order({
@@ -54,7 +57,9 @@ Router.post('/create', CheckLogin, CheckRole, async (req, res) => {
 // Xem và chỉnh sửa trạng thái đơn hàng
 Router.get('/detail/:id', CheckLogin, CheckRole, async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id).populate('products.product_id');
+        const order = await Order.findById(req.params.id).populate(
+            'products.product_id',
+        );
 
         if (!order) {
             return res.status(404).json({ error: 'Không tìm thấy đơn hàng.' });
@@ -63,14 +68,22 @@ Router.get('/detail/:id', CheckLogin, CheckRole, async (req, res) => {
         res.render('order-detail', { order });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Đã xảy ra lỗi khi lấy thông tin đơn hàng.' });
+        res.status(500).json({
+            error: 'Đã xảy ra lỗi khi lấy thông tin đơn hàng.',
+        });
     }
 });
 
 Router.post('/detail/:id', CheckLogin, CheckRole, async (req, res) => {
     try {
         const { status } = req.body; // Nhận trạng thái từ form
-        const validStatuses = ['đang chờ', 'đã xác nhận', 'đang vận chuyển', 'đã giao', 'đã hủy'];
+        const validStatuses = [
+            'đang chờ',
+            'đã xác nhận',
+            'đang vận chuyển',
+            'đã giao',
+            'đã hủy',
+        ];
 
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ error: 'Trạng thái không hợp lệ.' });
@@ -79,7 +92,7 @@ Router.post('/detail/:id', CheckLogin, CheckRole, async (req, res) => {
         const order = await Order.findByIdAndUpdate(
             req.params.id,
             { status },
-            { new: true } // Trả về bản ghi sau khi cập nhật
+            { new: true }, // Trả về bản ghi sau khi cập nhật
         );
 
         if (!order) {
@@ -89,7 +102,9 @@ Router.post('/detail/:id', CheckLogin, CheckRole, async (req, res) => {
         res.redirect(`/orders/detail/${req.params.id}`);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng.' });
+        res.status(500).json({
+            error: 'Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng.',
+        });
     }
 });
 
@@ -113,9 +128,10 @@ Router.get('/', CheckLogin, CheckRole, async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Đã xảy ra lỗi khi lấy danh sách đơn hàng.' });
+        res.status(500).json({
+            error: 'Đã xảy ra lỗi khi lấy danh sách đơn hàng.',
+        });
     }
 });
-
 
 module.exports = Router;

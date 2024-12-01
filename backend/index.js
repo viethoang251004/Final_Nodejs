@@ -20,12 +20,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
-app.use(session({
-    secret: '54ada8d8279d350e8bdbba6e5a498daa',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
-}));
+app.use(
+    session({
+        secret: '54ada8d8279d350e8bdbba6e5a498daa',
+        resave: false,
+        saveUninitialized: true,
+        cookie: { secure: false },
+    }),
+);
 
 // Serve static files from the "public" directory
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
@@ -48,19 +50,26 @@ const port = process.env.PORT || 8080;
 const CONNECTION_STRING = process.env.CONNECTION_STRING;
 
 if (!CONNECTION_STRING) {
-    console.error("Error: CONNECTION_STRING is not defined in the environment variables.");
+    console.error(
+        'Error: CONNECTION_STRING is not defined in the environment variables.',
+    );
     process.exit(1);
 }
 
 const connect = async () => {
     try {
-        console.log("Connecting to MongoDB with connection string:", CONNECTION_STRING);
+        console.log(
+            'Connecting to MongoDB with connection string:',
+            CONNECTION_STRING,
+        );
         await mongoose.connect(CONNECTION_STRING, {
             dbName: 'ePhoneShop',
         });
-        console.log("Connected to MongoDB.");
+        console.log('Connected to MongoDB.');
         // Chỉ khởi chạy server sau khi kết nối thành công
-        app.listen(port, () => console.log('Server is running at http://localhost:' + port));
+        app.listen(port, () =>
+            console.log('Server is running at http://localhost:' + port),
+        );
     } catch (error) {
         console.log('Không thể kết nối tới db server: ' + error.message);
     }

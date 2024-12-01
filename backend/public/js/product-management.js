@@ -1,13 +1,13 @@
 // Quản lý modal chỉnh sửa sản phẩm
 function openEditModal(productId) {
     fetch('/products/edit/' + productId)
-        .then(response => {
+        .then((response) => {
             if (!response.ok) {
                 throw new Error('Failed to fetch product data');
             }
             return response.json();
         })
-        .then(data => {
+        .then((data) => {
             const { product, categories, colors } = data;
 
             if (!product) {
@@ -27,7 +27,10 @@ function openEditModal(productId) {
 
             product.variants.forEach((variant, index) => {
                 const sizeOptions = generateSizeOptions(variant.size);
-                const colorOptions = generateColorOptions(colors, variant.color);
+                const colorOptions = generateColorOptions(
+                    colors,
+                    variant.color,
+                );
 
                 const variantHTML = `
                     <div class="form-row mb-3">
@@ -54,12 +57,15 @@ function openEditModal(productId) {
             });
 
             // Cập nhật URL của form
-            $('#editProductForm').attr('action', '/products/edit/' + product._id);
+            $('#editProductForm').attr(
+                'action',
+                '/products/edit/' + product._id,
+            );
 
             // Hiển thị modal
             $('#editProductModal').modal('show');
         })
-        .catch(error => {
+        .catch((error) => {
             console.error('Error loading product:', error);
             alert('Có lỗi xảy ra khi tải sản phẩm!');
         });
@@ -78,7 +84,7 @@ function handleAddCategory() {
         const data = {
             name: $form.find('input[name="name"]').val(),
             slug: $form.find('input[name="slug"]').val(),
-            description: $form.find('textarea[name="description"]').val()
+            description: $form.find('textarea[name="description"]').val(),
         };
 
         try {
@@ -124,9 +130,12 @@ function generateSizeOptions(selectedSize) {
 
 // Tạo các tùy chọn màu
 function generateColorOptions(colors, selectedColor) {
-    return colors.map(color =>
-        `<option value="${color}" ${color === selectedColor ? 'selected' : ''}>${color}</option>`
-    ).join('');
+    return colors
+        .map(
+            (color) =>
+                `<option value="${color}" ${color === selectedColor ? 'selected' : ''}>${color}</option>`,
+        )
+        .join('');
 }
 
 // Khởi tạo sự kiện
@@ -147,8 +156,21 @@ $('#addVariantBtn').on('click', () => {
     }
 
     // Danh sách các option màu (dựa vào danh sách colors từ server)
-    const colors = ['Red', 'Blue', 'Green', 'Yellow', 'Black', 'White', 'Pink', 'Purple', 'Brown', 'Orange']; // Dữ liệu có thể đến từ server nếu cần
-    const colorOptions = colors.map(color => `<option value="${color}">${color}</option>`).join('');
+    const colors = [
+        'Red',
+        'Blue',
+        'Green',
+        'Yellow',
+        'Black',
+        'White',
+        'Pink',
+        'Purple',
+        'Brown',
+        'Orange',
+    ]; // Dữ liệu có thể đến từ server nếu cần
+    const colorOptions = colors
+        .map((color) => `<option value="${color}">${color}</option>`)
+        .join('');
 
     // HTML của một dòng biến thể
     const variantHTML = `
@@ -192,12 +214,15 @@ function confirmDelete(productId) {
 $('#confirmDeleteButton').on('click', async () => {
     if (productIdToDelete) {
         try {
-            const response = await fetch(`/products/delete/${productIdToDelete}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await fetch(
+                `/products/delete/${productIdToDelete}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                },
+            );
 
             const result = await response.json();
 
@@ -239,7 +264,7 @@ $('form[action="/products/add"]').on('submit', async (event) => {
     try {
         const response = await fetch(form.action, {
             method: 'POST',
-            body: formData
+            body: formData,
         });
 
         const result = await response.json();
@@ -263,7 +288,7 @@ $('form[action^="/products/edit/"]').on('submit', async (event) => {
     try {
         const response = await fetch(form.action, {
             method: 'POST',
-            body: formData
+            body: formData,
         });
 
         const result = await response.json();

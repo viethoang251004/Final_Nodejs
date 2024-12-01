@@ -18,7 +18,7 @@ router.post('/add/:id', async (req, res) => {
 
         // Tìm biến thể (variant) dựa trên màu sắc và kích thước
         const selectedVariant = product.variants.find(
-            (variant) => variant.color === color && variant.size === size
+            (variant) => variant.color === color && variant.size === size,
         );
 
         if (!selectedVariant) {
@@ -42,7 +42,7 @@ router.post('/add/:id', async (req, res) => {
             const existingItem = userCart.items.find(
                 (item) =>
                     item.product_id.toString() === productId &&
-                    item.variant_id === selectedVariant._id.toString()
+                    item.variant_id === selectedVariant._id.toString(),
             );
 
             if (existingItem) {
@@ -67,7 +67,7 @@ router.post('/add/:id', async (req, res) => {
             const existingItem = req.session.cart.find(
                 (item) =>
                     item.product_id === productId &&
-                    item.variant_id === selectedVariant._id.toString()
+                    item.variant_id === selectedVariant._id.toString(),
             );
 
             if (existingItem) {
@@ -89,7 +89,6 @@ router.post('/add/:id', async (req, res) => {
     }
 });
 
-
 router.get('/', async (req, res) => {
     let cartItems = [];
     let total = 0;
@@ -97,11 +96,15 @@ router.get('/', async (req, res) => {
     try {
         if (req.user) {
             // Lấy giỏ hàng từ cơ sở dữ liệu
-            const userCart = await CartModel.findOne({ user_id: req.user._id }).populate('items.product_id');
+            const userCart = await CartModel.findOne({
+                user_id: req.user._id,
+            }).populate('items.product_id');
 
             if (userCart) {
                 cartItems = userCart.items.map((item) => {
-                    const variant = item.product_id.variants.id(item.variant_id); // Tìm variant theo ID
+                    const variant = item.product_id.variants.id(
+                        item.variant_id,
+                    ); // Tìm variant theo ID
                     return {
                         ...item._doc,
                         product: item.product_id,
@@ -113,15 +116,20 @@ router.get('/', async (req, res) => {
             // Nếu sử dụng session-based cart
             cartItems = await Promise.all(
                 req.session.cart.map(async (item) => {
-                    const product = await ProductModel.findById(item.product_id);
+                    const product = await ProductModel.findById(
+                        item.product_id,
+                    );
                     const variant = product.variants.id(item.variant_id);
                     return { ...item, product, variant: variant || null };
-                })
+                }),
             );
         }
 
         // Tính tổng giá
-        total = cartItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
+        total = cartItems.reduce(
+            (sum, item) => sum + item.quantity * item.price,
+            0,
+        );
 
         res.render('cart', { cartItems, total, user: req.user || null });
     } catch (error) {
