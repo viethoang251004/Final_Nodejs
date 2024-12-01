@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhoneShop - Trang chủ</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+    />
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2; /* Soft gray for a neutral background */
+            margin: 0;
+            color: #444;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background-color: #6c757d; /* Soft gray */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar a {
+            color: #ffffff !important;
+            font-weight: bold;
+        }
+
+        /* Hero Banner Styling */
+        .hero-banner {
+            background: linear-gradient(135deg, #d3e0ea, #f9f9f9); /* Soft blue to light gray */
+            height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333; /* Neutral dark text */
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .hero-banner h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Product Card Styling */
+        .product-card {
+            background-color: #ffffff;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card img {
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+            margin: 10px 0;
+        }
+
+        .product-price {
+            color: #28a745;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        /* Category Title Styling */
+        .category-title {
+            margin: 40px 0 20px;
+            font-weight: bold;
+            color: #007bff; /* Muted blue */
+            border-left: 5px solid #5a9bd4;
+            padding-left: 15px;
+        }
+
+        /* Pagination Styling */
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .pagination .page-link {
+            color: #007bff;
+        }
+
+        /* Coupon Banner Styling */
+        .coupon-banner {
+            background-color: #e9ecef;
+            padding: 20px;
+            border: 2px dashed #6c757d;
+            text-align: center;
+            margin: 30px 0;
+            border-radius: 15px;
+        }
+
+        .coupon-banner h4 {
+            color: #444;
+            font-weight: bold;
+        }
+
+        /* Form Styling */
+        .form-select,
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-select:focus,
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: none;
+        }
+
+        /* Button Styling */
+        .btn-outline-primary {
+            color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="/">PhoneShop</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <% if (user) { %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/profile">Xin chào, <%= user.name %></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cart">Giỏ hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/logout">Đăng xuất</a>
+                    </li>
+                <% } else { %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cart">Giỏ hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/login">Đăng nhập</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/register">Đăng ký</a>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="hero-banner">
+    <h1>Chào mừng đến với PhoneShop</h1>
+</div>
+
+<div class="container mt-4">
+    <form class="row g-3 mb-4">
+        <div class="col-md-3">
+            <select name="category" class="form-select" onchange="this.form.submit()">
+                <option value="">Tất cả danh mục</option>
+                <% categories.forEach(cat => { %>
+                    <option value="<%= cat.slug %>" <%= cat.slug === category ? 'selected' : '' %>><%= cat.name %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sản phẩm..."
+                   value="<%= search %>">
+        </div>
+        <div class="col-md-3">
+            <select name="sort" class="form-select" onchange="this.form.submit()">
+                <option value="name" <%= sort === 'name' ? 'selected' : '' %>>Sắp xếp theo tên</option>
+                <option value="price" <%= sort === 'price' ? 'selected' : '' %>>Sắp xếp theo giá</option>
+                <option value="date" <%= sort === 'date' ? 'selected' : '' %>>Sắp xếp theo thời gian</option>
+            </select>
+        </div>
+    </form>
+
+    <% categories.forEach(category => { %>
+        <h2 class="category-title"><%= category.name %></h2>
+        <div class="row g-4">
+            <% products.filter(product => product.category === category.slug).forEach(product => { %>
+                <div class="col-md-3">
+                    <div class="card product-card">
+                        <img src="<%= product.images[0] || '/default-image.jpg' %>" class="card-img-top"
+                             alt="<%= product.name %>"/>
+                        <div class="card-body text-center">
+                            <h5 class="product-title"><%= product.name %></h5>
+                            <p class="product-price text-success"><%= product.price.toLocaleString() %> VND</p>
+
+                            <!-- Thêm nút "Thêm vào giỏ hàng" -->
+                            <form action="/cart/add/<%= product._id %>" method="POST" class="d-inline">
+                                <input type="hidden" name="product_id" value="<%= product._id %>">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#addToCartModal<%= product._id %>">
+                                    Thêm vào giỏ hàng
+                                </button>
+                            </form>
+
+                            <a href="/products/<%= product._id %>" class="btn btn-sm btn-outline-primary">Chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="addToCartModal<%= product._id %>" tabindex="-1"
+                     aria-labelledby="modalLabel<%= product._id %>" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="/cart/add/<%= product._id %>" method="POST">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalLabel<%= product._id %>">Thêm sản phẩm vào giỏ
+                                        hàng</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>Sản phẩm:</strong> <%= product.name %></p>
+                                    <p><strong>Giá:</strong> <%= product.price.toLocaleString() %> VND</p>
+
+                                    <% if (product.variants && product.variants.length > 0) { %>
+                                        <div class="mb-3">
+                                            <label for="color<%= product._id %>" class="form-label">Chọn màu:</label>
+                                            <select name="color" id="color<%= product._id %>" class="form-select"
+                                                    required>
+                                                <% const colors = [...new Set(product.variants.map(variant => variant.color))]; %>
+                                                <% colors.forEach(color => { %>
+                                                    <option value="<%= color %>"><%= color %></option>
+                                                <% }); %>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="size<%= product._id %>" class="form-label">Chọn kích
+                                                thước:</label>
+                                            <select name="size" id="size<%= product._id %>" class="form-select"
+                                                    required>
+                                                <% const sizes = [...new Set(product.variants.map(variant => variant.size))]; %>
+                                                <% sizes.forEach(size => { %>
+                                                    <option value="<%= size %>"><%= size %></option>
+                                                <% }); %>
+                                            </select>
+                                        </div>
+                                    <% } %>
+
+                                    <div class="mb-3">
+                                        <label for="quantity<%= product._id %>" class="form-label">Số lượng:</label>
+                                        <input type="number" name="quantity" id="quantity<%= product._id %>"
+                                               class="form-control" value="1" min="1" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                    <button type="submit" class="btn btn-primary">Thêm vào giỏ hàng</button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            <% }); %>
+        </div>
+    <% }); %>
+</div>
+
+<!-- Phân trang -->
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>&sort=<%= sort %>&search=<%= search %>"><%= i %></a>
+            </li>
+        <% } %>
+    </ul>
+</nav>
+
+<script>
+    document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const productId = event.target.dataset.productId;
+            const modal = document.getElementById(`addToCartModal${productId}`);
+            // TO DO
+        });
+    });
+
+    document.querySelectorAll('.modal').forEach(modal => {
+        const colorSelect = modal.querySelector('.form-select[name="color"]');
+        const sizeSelect = modal.querySelector('.form-select[name="size"]');
+        const variants = JSON.parse(modal.dataset.variants); // Chứa danh sách biến thể
+
+        colorSelect.addEventListener('change', () => {
+            const selectedColor = colorSelect.value;
+
+            // Lọc kích thước phù hợp với màu đã chọn
+            const availableSizes = variants
+                .filter(variant => variant.color === selectedColor)
+                .map(variant => variant.size);
+
+            // Làm mới danh sách kích thước
+            sizeSelect.innerHTML = availableSizes
+                .map(size => `<option value="${size}">${size}</option>`)
+                .join('');
+        });
+    });
+
+</script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

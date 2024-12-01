@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử đơn hàng</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">Lịch sử đơn hàng</h1>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Mã đơn hàng</th>
+            <th>Ngày đặt</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% orders.forEach(order => { %>
+            <tr>
+                <td><%= order._id %></td>
+                <td><%= new Date(order.created_at).toLocaleDateString() %></td>
+                <td><%= order.total_price %> VND</td>
+                <td><%= order.status %></td>
+                <td>
+                    <a href="/orders/<%= order._id %>" class="btn btn-info btn-sm">Xem chi tiết</a>
+                </td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
