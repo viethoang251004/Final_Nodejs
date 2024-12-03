@@ -18,12 +18,10 @@ router.get('/', async (req, res) => {
 
         const query = {};
 
-        // Tìm kiếm theo tên sản phẩm
         if (search) {
             query.name = { $regex: search, $options: 'i' };
         }
 
-        // Lọc theo danh mục
         if (category) {
             const categoryData = await CategoryModel.findOne({
                 slug: category,
@@ -33,13 +31,12 @@ router.get('/', async (req, res) => {
             }
         }
 
-        // Sắp xếp
         const sortQuery = {};
         if (sort === 'price')
-            sortQuery.price = 1; // Sắp xếp theo giá tăng dần
+            sortQuery.price = 1;
         else if (sort === 'date')
-            sortQuery.created_at = -1; // Sắp xếp theo thời gian mới nhất
-        else sortQuery.name = 1; // Mặc định sắp xếp theo tên
+            sortQuery.created_at = -1;
+        else sortQuery.name = 1;
 
         const categories = await CategoryModel.find();
         const products = await ProductModel.find(query)
@@ -49,11 +46,20 @@ router.get('/', async (req, res) => {
         const totalProducts = await ProductModel.countDocuments(query);
         const totalPages = Math.ceil(totalProducts / limit);
 
-        res.render('home', {
-            categories,
-            products,
+        const pagination = {
             totalPages,
             currentPage: parseInt(page),
+            prevPage: page > 1 ? page - 1 : null,
+            nextPage: page < totalPages ? page + 1 : null,
+        };
+
+        res.render('layouts/user/main', {
+            title: 'Home Page',
+            body: 'home',
+            style: 'home-style',
+            categories,
+            products,
+            pagination,
             search,
             sort,
             category,
@@ -65,7 +71,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Xem chi tiết sản phẩm (bao gồm các biến thể)
 router.get('/products/:id', async (req, res) => {
     try {
         const product = await ProductModel.findById(req.params.id).populate(
@@ -83,7 +88,6 @@ router.get('/products/:id', async (req, res) => {
     }
 });
 
-// Xem sản phẩm theo danh mục (có phân trang)
 router.get('/category/:slug', async (req, res) => {
     try {
         const { page = 1, limit = 10, sort = 'name' } = req.query;
@@ -124,11 +128,10 @@ router.get('/category/:slug', async (req, res) => {
     }
 });
 
-// Route để xử lý đăng xuất
 router.get('/users/logout', (req, res) => {
-    res.clearCookie('userDataLogin'); // Xóa cookie chứa token
-    res.clearCookie('userRole'); // Xóa cookie vai trò người dùng (nếu có)
-    res.redirect('/'); // Chuyển hướng về trang chủ
+    res.clearCookie('userDataLogin');
+    res.clearCookie('userRole');
+    res.redirect('/');
 });
 
 module.exports = router;

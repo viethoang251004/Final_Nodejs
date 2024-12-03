@@ -1,0 +1,120 @@
+<div class="hero-banner">
+    <h1>Chào mừng đến với PhoneShop</h1>
+</div>
+
+<div class="container mt-4">
+    <form class="row g-3 mb-4">
+        <div class="col-md-3">
+            <select name="category" class="form-control" onchange="this.form.submit()">
+                <option value="">Tất cả danh mục</option>
+                <% categories.forEach(cat => { %>
+                    <option value="<%= cat.slug %>" <%= cat.slug === category ? 'selected' : '' %>><%= cat.name %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sản phẩm..."
+                   value="<%= search %>">
+        </div>
+        <div class="col-md-3">
+            <select name="sort" class="form-control" onchange="this.form.submit()">
+                <option value="name" <%= sort === 'name' ? 'selected' : '' %>>Sắp xếp theo tên</option>
+                <option value="price" <%= sort === 'price' ? 'selected' : '' %>>Sắp xếp theo giá</option>
+                <option value="date" <%= sort === 'date' ? 'selected' : '' %>>Sắp xếp theo thời gian</option>
+            </select>
+        </div>
+    </form>
+
+    <% categories.forEach(category => { %>
+        <h2 class="category-title"><%= category.name %></h2>
+        <div class="row g-4">
+            <% products.filter(product => product.category === category.slug).forEach(product => { %>
+                <div class="col-md-3">
+                    <div class="card product-card">
+                        <img src="<%= product.images[0] || '/default-image.jpg' %>" class="card-img-top"
+                             alt="<%= product.name %>"/>
+                        <div class="card-body text-center">
+                            <h5 class="product-title"><%= product.name %></h5>
+                            <p class="product-price text-success"><%= product.price.toLocaleString() %> VND</p>
+
+                            <form action="/cart/add/<%= product._id %>" method="POST" class="d-inline">
+                                <input type="hidden" name="product_id" value="<%= product._id %>">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#variantModal" data-product-id="<%= product._id %>" data-product-name="<%= product.name %>">
+                                    Mua
+                                </button>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% }); %>
+
+    <div class="pagination-container mt-5">
+        <ul class="pagination justify-content-center">
+            <% if (pagination.prevPage) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= pagination.prevPage %>">Trang trước</a>
+                </li>
+            <% } %>
+            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                <li class="page-item <%= pagination.currentPage === i ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>
+            <% if (pagination.nextPage) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= pagination.nextPage %>">Trang sau</a>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+
+    <div class="coupon-banner mt-5">
+        <h4>Nhận mã giảm giá ngay hôm nay!</h4>
+        <p>Áp dụng mã GIAMGIA để nhận ngay 10% giảm giá cho đơn hàng đầu tiên của bạn!</p>
+        <button class="btn btn-outline-primary">Nhận ngay</button>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="variantModal" tabindex="-1" role="dialog" aria-labelledby="variantModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="variantModalLabel">Chọn Biến Thể cho Sản Phẩm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="variantForm" action="" method="POST">
+                    <div class="form-group">
+                        <label for="color">Chọn Màu:</label>
+                        <select name="color" id="color" class="form-control">
+                            <!-- Options for colors will be dynamically populated -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="size">Chọn Kích Thước:</label>
+                        <select name="size" id="size" class="form-control">
+                            <!-- Options for sizes will be dynamically populated -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Số lượng:</label>
+                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm vào giỏ hàng</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/homepage.js?v=<%= new Date().getTime() %>"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

@@ -97,3 +97,304 @@ body {
     background-color: #ffc107;
     color: #333;
 }
+
+.home-style {
+    /* General Body Styling */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f9f9f9; /* Light gray for a neutral background */
+        margin: 0;
+        color: #333; /* Dark text for readability */
+    }
+
+    /* Navbar Styling */
+    .navbar {
+        background-color: #343a40; /* Darker gray background */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar a {
+        color: #ffffff !important;
+        font-weight: bold;
+    }
+
+    /* Hero Banner Styling */
+    .hero-banner {
+        background: linear-gradient(135deg, #a0d0e0, #e5e5e5); /* Soft blue to light gray */
+        height: 350px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333; /* Dark text color */
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+    }
+
+    .hero-banner h1 {
+        font-size: 3rem;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    /* Product Card Styling */
+    .product-card {
+        background-color: #ffffff;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-card img {
+        height: 200px;
+        object-fit: cover;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+    }
+
+    .product-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #007bff;
+        margin: 10px 0;
+    }
+
+    .product-price {
+        color: #28a745; /* Green for price */
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    /* Category Title Styling */
+    .category-title {
+        margin: 40px 0 20px;
+        font-weight: bold;
+        color: #007bff; /* Muted blue */
+        border-left: 5px solid #5a9bd4;
+        padding-left: 15px;
+    }
+
+    /* Pagination Styling */
+    .pagination .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .pagination .page-link {
+        color: #007bff;
+    }
+
+    /* Coupon Banner Styling */
+    .coupon-banner {
+        background-color: #e9ecef;
+        padding: 20px;
+        border: 2px dashed #6c757d;
+        text-align: center;
+        margin: 30px 0;
+        border-radius: 15px;
+    }
+
+    .coupon-banner h4 {
+        color: #444;
+        font-weight: bold;
+    }
+
+    /* Form Styling */
+    .form-select,
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-select:focus,
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: none;
+    }
+
+    /* Button Styling */
+    .btn-outline-primary {
+        color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .btn {
+        background-color: #007bff;
+        color: #fff;
+        font-weight: bold;
+        border: none;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+    }
+}
+
+.cart-style {
+    /* General Styling */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #007bff;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    table {
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+
+    table th {
+        background: #007bff;
+        color: #fff;
+        text-align: center;
+        padding: 15px;
+    }
+
+    table td {
+        text-align: center;
+        padding: 15px;
+        vertical-align: middle;
+    }
+
+    table td img {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    /* Navbar Styling */
+    .navbar {
+        background-color: #004085; /* Deep Blue */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+        color: #ffffff !important;
+        font-weight: bold;
+    }
+
+    .navbar-nav .nav-link {
+        color: #ffffff !important;
+        font-size: 16px;
+        font-weight: normal;
+        padding: 10px 15px;
+        transition: color 0.3s ease;
+    }
+
+    .navbar-nav .nav-link:hover {
+        color: #f8f9fa !important;
+        background-color: rgba(0, 123, 255, 0.1);
+        border-radius: 5px;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 8px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        transform: translateY(-3px);
+    }
+
+    .btn-primary:active {
+        background-color: #004a99;
+        transform: translateY(1px);
+    }
+
+    /* Remove Button Styling */
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+        font-size: 14px;
+        padding: 8px 16px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+        transform: translateY(-2px);
+    }
+
+    .btn-danger:active {
+        background-color: #bd2130;
+        transform: translateY(1px);
+    }
+
+    /* Empty Cart */
+    p {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #555;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        table th, table td {
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+        }
+
+        .btn-primary {
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+
+        .btn-danger {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .navbar-nav .nav-link {
+            padding: 8px 10px;
+            font-size: 14px;
+        }
+    }
+}

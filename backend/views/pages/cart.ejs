@@ -1,0 +1,50 @@
+<div class="container mt-5">
+    <h1>Giỏ hàng của bạn</h1>
+    <% if (cartItems.length > 0) { %>
+        <table class="table table-bordered mt-4">
+            <thead>
+            <tr>
+                <th>Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th>Tổng</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% cartItems.forEach(item => { %>
+                <tr>
+                    <td><img src="<%= item.product.images[0] || '/default-image.jpg' %>" alt="<%= item.product.name %>" style="max-height: 100px;" /></td>
+                    <td>
+                        <%= item.product.name %>
+                        <br>
+                        <% if (item.variant) { %>
+                            <small>Biến thể: Màu <%= item.variant.color %>, Kích thước <%= item.variant.size %></small>
+                        <% } else { %>
+                            <small>Biến thể không tồn tại.</small>
+                        <% } %>
+                    </td>
+                    <td><%= item.quantity %></td>
+                    <td><%= item.product.price.toLocaleString() %> VND</td>
+                    <td><%= (item.quantity * item.product.price).toLocaleString() %> VND</td>
+                    <td>
+                        <!-- Thêm nút Xoá -->
+                        <form action="/cart/remove/<%= item.product._id %>" method="POST">
+                            <input type="hidden" name="color" value="<%= item.variant.color %>" />
+                            <input type="hidden" name="size" value="<%= item.variant.size %>" />
+                            <button type="submit" class="btn btn-danger">Xoá</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+            </tbody>
+        </table>
+        <h4 class="text-end">Tổng cộng: <%= total.toLocaleString() %> VND</h4>
+        <div class="text-end">
+            <a href="/checkout" class="btn btn-primary">Thanh toán</a>
+        </div>
+    <% } else { %>
+        <p>Giỏ hàng của bạn hiện đang trống.</p>
+    <% } %>
+</div>

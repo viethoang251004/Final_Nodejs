@@ -1,0 +1,29 @@
+<div class="container mt-5">
+    <h1 class="mb-4 text-center text-secondary">Bảng điều khiển</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title text-uppercase">Người dùng</h5>
+                    <p class="card-text"><%= totalUsers %> người</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title text-uppercase">Đơn hàng</h5>
+                    <p class="card-text"><%= totalOrders %> đơn hàng</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title text-uppercase">Doanh thu</h5>
+                    <p class="card-text"><%= totalRevenue.toLocaleString() %> VND</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

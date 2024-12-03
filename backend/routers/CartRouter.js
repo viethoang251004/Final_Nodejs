@@ -7,7 +7,7 @@ const CartModel = require('../models/CartModel');
 
 router.post('/add/:id', async (req, res) => {
     const productId = req.params.id;
-    const { color, size, quantity } = req.body;
+    const {color, size, quantity} = req.body;
 
     try {
         // Tìm sản phẩm
@@ -33,9 +33,9 @@ router.post('/add/:id', async (req, res) => {
 
         // Nếu user đã đăng nhập
         if (req.user) {
-            let userCart = await CartModel.findOne({ user_id: req.user._id });
+            let userCart = await CartModel.findOne({user_id: req.user._id});
             if (!userCart) {
-                userCart = new CartModel({ user_id: req.user._id, items: [] });
+                userCart = new CartModel({user_id: req.user._id, items: []});
             }
 
             // Kiểm tra nếu sản phẩm và biến thể đã có trong giỏ hàng
@@ -104,37 +104,103 @@ router.get('/', async (req, res) => {
                 cartItems = userCart.items.map((item) => {
                     const variant = item.product_id.variants.id(
                         item.variant_id,
-                    ); // Tìm variant theo ID
+                    );
                     return {
                         ...item._doc,
                         product: item.product_id,
-                        variant: variant || null, // Đảm bảo variant không null
+                        variant: variant || null,
                     };
                 });
             }
         } else if (req.session.cart) {
-            // Nếu sử dụng session-based cart
             cartItems = await Promise.all(
                 req.session.cart.map(async (item) => {
                     const product = await ProductModel.findById(
                         item.product_id,
                     );
                     const variant = product.variants.id(item.variant_id);
-                    return { ...item, product, variant: variant || null };
+                    return {...item, product, variant: variant || null};
                 }),
             );
         }
 
-        // Tính tổng giá
         total = cartItems.reduce(
             (sum, item) => sum + item.quantity * item.price,
             0,
         );
 
-        res.render('cart', { cartItems, total, user: req.user || null });
+        res.render('layouts/user/main', {
+            title: 'Giỏ hàng - PhoneShop',
+            body: 'cart',
+            style: 'cart-style',
+            cartItems,
+            total,
+            user: req.user || null
+        });
     } catch (error) {
         console.error('Error displaying cart:', error.message);
         res.status(500).send('Có lỗi xảy ra khi tải giỏ hàng.');
+    }
+});
+
+router.post('/remove/:id', async (req, res) => {
+    const productId = req.params.id;
+    const {color, size} = req.body;
+
+    try {
+        // Tìm sản phẩm trong CSDL
+        const product = await ProductModel.findById(productId);
+        if (!product) {
+            return res.status(404).send('Sản phẩm không tồn tại.');
+        }
+
+        // Tìm biến thể (variant) dựa trên màu sắc và kích thước
+        const selectedVariant = product.variants.find(
+            (variant) => variant.color === color && variant.size === size
+        );
+
+        if (!selectedVariant) {
+            return res.status(400).send('Biến thể không tồn tại.');
+        }
+
+        // Nếu người dùng đã đăng nhập, xóa sản phẩm trong giỏ hàng của họ
+        if (req.user) {
+            let userCart = await CartModel.findOne({user_id: req.user._id});
+            if (!userCart) {
+                return res.status(404).send('Giỏ hàng không tồn tại.');
+            }
+
+            // Kiểm tra và log dữ liệu trước khi xóa
+            console.log('User Cart before removal:', userCart.items);
+
+            // Tìm và xoá sản phẩm khỏi giỏ hàng của người dùng
+            userCart.items = userCart.items.filter(
+                (item) =>
+                    item.product_id.toString() !== productId ||
+                    item.variant_id.toString() !== selectedVariant._id.toString()
+            );
+
+            console.log('User Cart after removal:', userCart.items);  // Log lại giỏ hàng sau khi xóa
+
+            await userCart.save();
+        } else {
+            // Nếu người dùng chưa đăng nhập, xóa sản phẩm trong giỏ hàng session
+            if (req.session.cart) {
+                // Log giỏ hàng trong session trước khi thao tác
+                console.log('Current session cart:', req.session.cart);
+                req.session.cart = req.session.cart.filter(
+                    (item) =>
+                        item.product_id !== productId ||
+                        item.variant_id !== selectedVariant._id.toString()
+                );
+                console.log('Updated session cart:', req.session.cart);  // Log lại giỏ hàng sau khi xóa
+            }
+        }
+
+        res.redirect('/cart'); // Quay lại trang giỏ hàng
+    } catch (error) {
+        console.error('Error removing from cart:', error.message);
+        res.status(500).send('Có lỗi xảy ra khi xoá sản phẩm khỏi giỏ hàng.');
     }
 });
 

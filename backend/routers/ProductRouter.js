@@ -61,7 +61,7 @@ Router.get('/', CheckRole, allProductLimiter, async (req, res) => {
             'Maroon',
         ];
 
-        res.render('layouts/main', {
+        res.render('layouts/admin/main', {
             title: 'Product Management',
             body: 'productManagement',
             style: 'productManagement-style',
