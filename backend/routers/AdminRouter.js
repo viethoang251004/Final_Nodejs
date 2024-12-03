@@ -57,7 +57,11 @@ router.get('/orders', CheckLogin, CheckAdminAccess, async (req, res) => {
     try {
         const orders = await OrderModel.find().populate('user_id');
 
-        res.render('orderManagement', { orders });
+        res.render('layouts/main', {
+            title: 'Order Management',
+            body: 'orderManagement',
+            orders,
+        });
     } catch (error) {
         console.error('Error fetching orders:', error.message);
         res.status(500).send('Lỗi khi tải danh sách đơn hàng.');
@@ -67,7 +71,11 @@ router.get('/orders', CheckLogin, CheckAdminAccess, async (req, res) => {
 router.get('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
     try {
         const coupons = await CouponModel.find().sort({ created_at: -1 });
-        res.render('couponManagement', { coupons });
+        res.render('couponManagement', {
+            message: '',
+            coupons
+        });
+
     } catch (error) {
         console.error('Error fetching coupons:', error.message);
         res.status(500).send('Lỗi khi tải danh sách mã giảm giá.');
@@ -77,31 +85,43 @@ router.get('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
 router.post('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
     const { code, discount, expires_at } = req.body;
     try {
+        const existingCoupon = await CouponModel.findOne({ code });
+        if (existingCoupon) {
+            return res.render('couponManagement', {
+                message: 'Mã giảm giá đã tồn tại!',
+                coupons: await CouponModel.find().sort({ created_at: -1 })
+            });
+        }
+
         const coupon = new CouponModel({ code, discount, expires_at });
         await coupon.save();
-        res.status(201).json({ message: 'Mã giảm giá được tạo thành công!' });
+        res.render('couponManagement', {
+            message: 'Mã giảm giá được tạo thành công!',
+            coupons: await CouponModel.find().sort({ created_at: -1 })
+        });
     } catch (error) {
         console.error('Error creating coupon:', error.message);
-        res.status(500).send('Lỗi khi tạo mã giảm giá.');
+        res.render('couponManagement', {
+            message: 'Lỗi khi tạo mã giảm giá!',
+            coupons: await CouponModel.find().sort({ created_at: -1 })
+        });
     }
 });
 
-router.delete(
-    '/coupons/:id',
-    CheckLogin,
-    CheckAdminAccess,
-    async (req, res) => {
-        try {
-            const { id } = req.params;
-            await CouponModel.findByIdAndDelete(id);
-            res.status(200).json({
-                message: 'Mã giảm giá đã được xóa thành công!',
-            });
-        } catch (error) {
-            console.error('Error deleting coupon:', error.message);
-            res.status(500).send('Lỗi khi xóa mã giảm giá.');
-        }
-    },
-);
-
+router.post('/coupons/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
+    try {
+        const { id } = req.params;
+        await CouponModel.findByIdAndDelete(id);
+        res.render('couponManagement', {
+            message: 'Mã giảm giá đã được xóa thành công!',
+            coupons: await CouponModel.find().sort({ created_at: -1 })
+        });
+    } catch (error) {
+        console.error('Error deleting coupon:', error.message);
+        res.render('couponManagement', {
+            message: 'Lỗi khi xóa mã giảm giá!',
+            coupons: await CouponModel.find().sort({ created_at: -1 })
+        });
+    }
+});
 module.exports = router;
