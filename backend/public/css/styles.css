@@ -102,14 +102,13 @@ body {
     /* General Body Styling */
     body {
         font-family: 'Arial', sans-serif;
-        background-color: #f9f9f9; /* Light gray for a neutral background */
-        margin: 0;
-        color: #333; /* Dark text for readability */
+        background-color: #f9f9f9;
+        color: #333;
     }
 
     /* Navbar Styling */
     .navbar {
-        background-color: #343a40; /* Darker gray background */
+        background-color: #343a40;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
@@ -120,12 +119,12 @@ body {
 
     /* Hero Banner Styling */
     .hero-banner {
-        background: linear-gradient(135deg, #a0d0e0, #e5e5e5); /* Soft blue to light gray */
+        background: linear-gradient(135deg, #a0d0e0, #e5e5e5);
         height: 350px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #333; /* Dark text color */
+        color: #333;
         text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
@@ -140,7 +139,6 @@ body {
     /* Product Card Styling */
     .product-card {
         background-color: #ffffff;
-        border: none;
         border-radius: 15px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;

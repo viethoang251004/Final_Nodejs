@@ -11,7 +11,7 @@ const authMiddleware = async (req, res, next) => {
             );
         }
     } catch (error) {
-        req.user = null; // Nếu không có user, gán là null
+        req.user = null;
     }
     next();
 };

@@ -17,7 +17,7 @@ router.get('/', CheckLogin, CheckAdminAccess, async (req, res) => {
             { $group: { _id: null, total: { $sum: '$total_price' } } },
         ]);
 
-        res.render('layouts/main', {
+        res.render('layouts/admin/main', {
             title: 'Admin Dashboard',
             body: 'dashboard',
             style: 'dashboard-style',

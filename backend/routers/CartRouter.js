@@ -7,7 +7,7 @@ const CartModel = require('../models/CartModel');
 
 router.post('/add/:id', async (req, res) => {
     const productId = req.params.id;
-    const {color, size, quantity} = req.body;
+    const { color, size, quantity } = req.body;
 
     try {
         // Tìm sản phẩm
@@ -33,9 +33,9 @@ router.post('/add/:id', async (req, res) => {
 
         // Nếu user đã đăng nhập
         if (req.user) {
-            let userCart = await CartModel.findOne({user_id: req.user._id});
+            let userCart = await CartModel.findOne({ user_id: req.user._id });
             if (!userCart) {
-                userCart = new CartModel({user_id: req.user._id, items: []});
+                userCart = new CartModel({ user_id: req.user._id, items: [] });
             }
 
             // Kiểm tra nếu sản phẩm và biến thể đã có trong giỏ hàng

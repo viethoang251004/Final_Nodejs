@@ -1,4 +1,3 @@
-// Quản lý modal chỉnh sửa sản phẩm
 function openEditModal(productId) {
     fetch('/products/edit/' + productId)
         .then((response) => {
@@ -15,13 +14,11 @@ function openEditModal(productId) {
                 return;
             }
 
-            // Điền thông tin sản phẩm cơ bản
             $('#editName').val(product.name);
             $('#editPrice').val(product.price);
             $('#editCategory').val(product.category);
             $('#editDescription').val(product.description);
 
-            // Hiển thị biến thể (variants)
             const $variantContainer = $('#editVariantContainer');
             $variantContainer.empty();
 
@@ -56,13 +53,11 @@ function openEditModal(productId) {
                 $variantContainer.append(variantHTML);
             });
 
-            // Cập nhật URL của form
             $('#editProductForm').attr(
                 'action',
                 '/products/edit/' + product._id,
             );
 
-            // Hiển thị modal
             $('#editProductModal').modal('show');
         })
         .catch((error) => {
@@ -71,7 +66,6 @@ function openEditModal(productId) {
         });
 }
 
-// Thêm danh mục
 function handleAddCategory() {
     $('#addCategoryBtn').on('click', () => {
         $('#addCategoryModal').modal('show');
@@ -97,14 +91,12 @@ function handleAddCategory() {
             if (response.ok) {
                 const newCategory = await response.json();
 
-                // Cập nhật dropdown danh mục
                 const $categorySelect = $('#category');
                 const $newOption = $('<option>')
                     .val(newCategory.slug)
                     .text(newCategory.name);
                 $categorySelect.append($newOption);
 
-                // Reset form và đóng modal
                 $form[0].reset();
                 $('#addCategoryModal').modal('hide');
             } else {
@@ -118,7 +110,6 @@ function handleAddCategory() {
     });
 }
 
-// Tạo các tùy chọn size
 function generateSizeOptions(selectedSize) {
     let options = '';
     for (let i = 4.0; i <= 6.81; i += 0.1) {
@@ -128,7 +119,6 @@ function generateSizeOptions(selectedSize) {
     return options;
 }
 
-// Tạo các tùy chọn màu
 function generateColorOptions(colors, selectedColor) {
     return colors
         .map(
@@ -138,24 +128,20 @@ function generateColorOptions(colors, selectedColor) {
         .join('');
 }
 
-// Khởi tạo sự kiện
 $(document).ready(() => {
     handleAddCategory();
 });
 
-// Thêm biến thể mới
 $('#addVariantBtn').on('click', () => {
     const $variantContainer = $('#variantContainer');
     const variantIndex = $variantContainer.children().length; // Tự động tăng chỉ số biến thể
 
-    // Danh sách các option size
     let sizeOptions = '';
     for (let i = 4.0; i <= 6.81; i += 0.1) {
         const size = i.toFixed(2);
         sizeOptions += `<option value="${size}">${size}</option>`;
     }
 
-    // Danh sách các option màu (dựa vào danh sách colors từ server)
     const colors = [
         'Red',
         'Blue',
@@ -167,12 +153,11 @@ $('#addVariantBtn').on('click', () => {
         'Purple',
         'Brown',
         'Orange',
-    ]; // Dữ liệu có thể đến từ server nếu cần
+    ];
     const colorOptions = colors
         .map((color) => `<option value="${color}">${color}</option>`)
         .join('');
 
-    // HTML của một dòng biến thể
     const variantHTML = `
         <div class="form-row mb-3">
             <div class="col-md-4">
@@ -196,21 +181,17 @@ $('#addVariantBtn').on('click', () => {
         </div>
     `;
 
-    // Thêm dòng biến thể vào container
     $variantContainer.append(variantHTML);
 });
 
-// Hiển thị modal xác nhận xóa sản phẩm
 let productIdToDelete = null;
 
 function confirmDelete(productId) {
     productIdToDelete = productId;
 
-    // Hiển thị modal Bootstrap xác nhận xóa
     $('#deleteProductModal').modal('show');
 }
 
-// Xử lý khi xác nhận xóa
 $('#confirmDeleteButton').on('click', async () => {
     if (productIdToDelete) {
         try {
@@ -227,18 +208,14 @@ $('#confirmDeleteButton').on('click', async () => {
             const result = await response.json();
 
             if (response.ok) {
-                // Đóng modal xác nhận xóa
                 $('#deleteProductModal').modal('hide');
 
-                // Hiển thị thông báo thành công trong modal thông báo
                 showNotification('Thông báo', result.message);
 
-                // Tùy chọn: làm mới trang hoặc cập nhật giao diện động
                 setTimeout(() => {
-                    location.reload(); // Tải lại trang để cập nhật thay đổi
+                    location.reload();
                 }, 1500);
             } else {
-                // Nếu có lỗi, hiển thị thông báo lỗi trong modal
                 showNotification('Lỗi', result.message);
             }
         } catch (error) {
@@ -248,14 +225,12 @@ $('#confirmDeleteButton').on('click', async () => {
     }
 });
 
-// Hiển thị thông báo thành công (toast)
 function showNotification(title, message) {
     $('#notificationModalLabel').text(title);
     $('#notificationModalBody').text(message);
     $('#notificationModal').modal('show');
 }
 
-// Xử lý thêm sản phẩm
 $('form[action="/products/add"]').on('submit', async (event) => {
     event.preventDefault();
     const form = event.target;
@@ -279,7 +254,6 @@ $('form[action="/products/add"]').on('submit', async (event) => {
     }
 });
 
-// Xử lý chỉnh sửa sản phẩm
 $('form[action^="/products/edit/"]').on('submit', async (event) => {
     event.preventDefault();
     const form = event.target;
@@ -303,7 +277,6 @@ $('form[action^="/products/edit/"]').on('submit', async (event) => {
     }
 });
 
-// Xử lý thêm danh mục
 $('#addCategoryForm').on('submit', async (event) => {
     event.preventDefault();
     const form = event.target;
@@ -326,9 +299,9 @@ $('#addCategoryForm').on('submit', async (event) => {
 
         if (result.success) {
             showNotification('Success', 'Category added successfully');
-            setTimeout(() => location.reload(), 1500); // Reload to reflect changes
+            setTimeout(() => location.reload(), 1500);
         } else {
-            showNotification('Error', result.message); // Show specific error from the backend
+            showNotification('Error', result.message);
         }
     } catch (error) {
         showNotification('Error', 'Failed to add category');
