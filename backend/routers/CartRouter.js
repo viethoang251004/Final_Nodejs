@@ -128,7 +128,7 @@ router.get('/', async (req, res) => {
             style: 'cart-style',
             cartItems,
             total,
-            user: req.user || null
+            user: req.user || null,
         });
     } catch (error) {
         console.error('Error displaying cart:', error.message);
@@ -147,7 +147,7 @@ router.post('/remove/:id', async (req, res) => {
         }
 
         const selectedVariant = product.variants.find(
-            (variant) => variant.color === color && variant.size === size
+            (variant) => variant.color === color && variant.size === size,
         );
 
         if (!selectedVariant) {
@@ -165,7 +165,8 @@ router.post('/remove/:id', async (req, res) => {
             userCart.items = userCart.items.filter(
                 (item) =>
                     item.product_id.toString() !== productId ||
-                    item.variant_id.toString() !== selectedVariant._id.toString()
+                    item.variant_id.toString() !==
+                        selectedVariant._id.toString(),
             );
 
             console.log('User Cart after removal:', userCart.items);
@@ -177,7 +178,7 @@ router.post('/remove/:id', async (req, res) => {
                 req.session.cart = req.session.cart.filter(
                     (item) =>
                         item.product_id !== productId ||
-                        item.variant_id !== selectedVariant._id.toString()
+                        item.variant_id !== selectedVariant._id.toString(),
                 );
                 console.log('Updated session cart:', req.session.cart);
             }
@@ -193,8 +194,8 @@ router.post('/remove/:id', async (req, res) => {
 router.get('/checkout', async (req, res) => {
     let cartItems = [];
     let total = 0;
-    let discountCode = req.session.discountCode || ''; 
-    let discountAmount = req.session.discountAmount || 0; 
+    let discountCode = req.session.discountCode || '';
+    let discountAmount = req.session.discountAmount || 0;
     let shippingCost = req.session.shippingCost || 20000;
     let customerInfo = {
         full_name: '',
@@ -202,20 +203,26 @@ router.get('/checkout', async (req, res) => {
         address: '',
         bankName: '',
         accountNumber: '',
-        accountName: ''
+        accountName: '',
     };
 
     try {
         if (req.user) {
-            const user = await UserModel.findById(req.user._id).select('name addresses');
+            const user = await UserModel.findById(req.user._id).select(
+                'name addresses',
+            );
             if (!user) {
                 return res.status(404).send('User not found');
             }
 
-            const userCart = await CartModel.findOne({ user_id: req.user._id }).populate('items.product_id');
+            const userCart = await CartModel.findOne({
+                user_id: req.user._id,
+            }).populate('items.product_id');
             if (userCart) {
                 cartItems = userCart.items.map((item) => {
-                    const variant = item.product_id.variants.id(item.variant_id);
+                    const variant = item.product_id.variants.id(
+                        item.variant_id,
+                    );
                     return {
                         ...item._doc,
                         product: item.product_id,
@@ -223,7 +230,9 @@ router.get('/checkout', async (req, res) => {
                     };
                 });
             }
-            const defaultAddress = user.addresses.find(address => address.is_default) || user.addresses[0];
+            const defaultAddress =
+                user.addresses.find((address) => address.is_default) ||
+                user.addresses[0];
 
             if (defaultAddress) {
                 customerInfo = {
@@ -238,18 +247,22 @@ router.get('/checkout', async (req, res) => {
                     address: '',
                 };
             }
-
         } else if (req.session.cart) {
             cartItems = await Promise.all(
                 req.session.cart.map(async (item) => {
-                    const product = await ProductModel.findById(item.product_id);
+                    const product = await ProductModel.findById(
+                        item.product_id,
+                    );
                     const variant = product.variants.id(item.variant_id);
                     return { ...item, product, variant: variant || null };
                 }),
             );
         }
 
-        total = cartItems.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
+        total = cartItems.reduce(
+            (sum, item) => sum + item.quantity * item.product.price,
+            0,
+        );
 
         if (!discountCode || discountCode.trim() === '' || !discountAmount) {
             req.session.discountCode = '';
@@ -262,7 +275,10 @@ router.get('/checkout', async (req, res) => {
         if (discountCode) {
             const coupon = await CouponModel.findOne({ code: discountCode });
             if (coupon && new Date(coupon.expires_at) >= new Date()) {
-                discountAmount = Math.min((total * coupon.discount) / 100, total);
+                discountAmount = Math.min(
+                    (total * coupon.discount) / 100,
+                    total,
+                );
             } else {
                 req.session.discountCode = '';
                 req.session.discountAmount = 0;
@@ -286,7 +302,6 @@ router.get('/checkout', async (req, res) => {
     }
 });
 
-
 router.post('/checkout/confirm', async (req, res) => {
     const { shippingMethod } = req.body;
     let cartItems = [];
@@ -306,36 +321,52 @@ router.post('/checkout/confirm', async (req, res) => {
     req.session.shippingCost = shippingCost;
     try {
         if (req.user) {
-            const userCart = await CartModel.findOne({ user_id: req.user._id }).populate('items.product_id');
+            const userCart = await CartModel.findOne({
+                user_id: req.user._id,
+            }).populate('items.product_id');
 
             if (userCart && userCart.items.length > 0) {
-                cartItems = userCart.items.map(item => {
-                    const variant = item.product_id.variants.id(item.variant_id);
+                cartItems = userCart.items.map((item) => {
+                    const variant = item.product_id.variants.id(
+                        item.variant_id,
+                    );
                     return {
                         ...item._doc,
                         product: item.product_id,
-                        variant: variant || null
+                        variant: variant || null,
                     };
                 });
             }
         } else if (req.session.cart && req.session.cart.length > 0) {
-            cartItems = await Promise.all(req.session.cart.map(async (item) => {
-                const product = await ProductModel.findById(item.product_id);
-                const variant = product.variants.id(item.variant_id);
-                return { ...item, product, variant: variant || null };
-            }));
+            cartItems = await Promise.all(
+                req.session.cart.map(async (item) => {
+                    const product = await ProductModel.findById(
+                        item.product_id,
+                    );
+                    const variant = product.variants.id(item.variant_id);
+                    return { ...item, product, variant: variant || null };
+                }),
+            );
         }
 
         if (cartItems.length === 0) {
-            return res.status(400).send('Giỏ hàng của bạn hiện tại đang trống.');
+            return res
+                .status(400)
+                .send('Giỏ hàng của bạn hiện tại đang trống.');
         }
 
-        total = cartItems.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
+        total = cartItems.reduce(
+            (sum, item) => sum + item.quantity * item.product.price,
+            0,
+        );
 
         if (discountCode) {
             const coupon = await CouponModel.findOne({ code: discountCode });
             if (coupon && new Date(coupon.expires_at) >= new Date()) {
-                discountAmount = Math.min((total * coupon.discount) / 100, total);
+                discountAmount = Math.min(
+                    (total * coupon.discount) / 100,
+                    total,
+                );
             }
         }
         let subtotal = total - discountAmount;
@@ -350,7 +381,7 @@ router.post('/checkout/confirm', async (req, res) => {
             customerInfo,
             paymentMethod,
             shippingCost,
-            user: req.user || null
+            user: req.user || null,
         });
     } catch (error) {
         console.error('Error rendering checkout confirm page:', error);
@@ -359,30 +390,37 @@ router.post('/checkout/confirm', async (req, res) => {
 });
 
 router.post('/checkout/apply-coupon', async (req, res) => {
-    const { code } = req.body; 
-    let discountAmount = 0; 
-    let total = 0; 
+    const { code } = req.body;
+    let discountAmount = 0;
+    let total = 0;
     let shippingCost = req.session.shippingCost || 20000;
     try {
         let cartItems = [];
         if (req.user) {
-            const userCart = await CartModel.findOne({ user_id: req.user._id }).populate('items.product_id');
+            const userCart = await CartModel.findOne({
+                user_id: req.user._id,
+            }).populate('items.product_id');
             if (userCart) {
-                cartItems = userCart.items.map(item => ({
+                cartItems = userCart.items.map((item) => ({
                     ...item._doc,
                     product: item.product_id,
                 }));
             }
         } else if (req.session.cart) {
             cartItems = await Promise.all(
-                req.session.cart.map(async item => {
-                    const product = await ProductModel.findById(item.product_id);
+                req.session.cart.map(async (item) => {
+                    const product = await ProductModel.findById(
+                        item.product_id,
+                    );
                     return { ...item, product };
-                })
+                }),
             );
         }
 
-        total = cartItems.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
+        total = cartItems.reduce(
+            (sum, item) => sum + item.quantity * item.product.price,
+            0,
+        );
 
         if (!code || code.trim() === '') {
             return res.status(400).send('Vui lòng nhập mã giảm giá.');
@@ -413,13 +451,20 @@ router.post('/checkout/apply-coupon', async (req, res) => {
             finalAmount: total - discountAmount + shippingCost,
         });
     } catch (error) {
-        console.error('Error applying coupon:', error); 
+        console.error('Error applying coupon:', error);
         res.status(500).send('Có lỗi xảy ra khi áp dụng mã giảm giá.');
     }
 });
 
 router.post('/checkout/complete', (req, res) => {
-    const { full_name, phone, address, paymentMethod, cartItems, shippingCost } = req.body;
+    const {
+        full_name,
+        phone,
+        address,
+        paymentMethod,
+        cartItems,
+        shippingCost,
+    } = req.body;
 
     req.session.cart = [];
     req.session.total = 0;

@@ -73,9 +73,8 @@ router.get('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
         const coupons = await CouponModel.find().sort({ created_at: -1 });
         res.render('couponManagement', {
             message: '',
-            coupons
+            coupons,
         });
-
     } catch (error) {
         console.error('Error fetching coupons:', error.message);
         res.status(500).send('Lỗi khi tải danh sách mã giảm giá.');
@@ -89,7 +88,7 @@ router.post('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
         if (existingCoupon) {
             return res.render('couponManagement', {
                 message: 'Mã giảm giá đã tồn tại!',
-                coupons: await CouponModel.find().sort({ created_at: -1 })
+                coupons: await CouponModel.find().sort({ created_at: -1 }),
             });
         }
 
@@ -97,13 +96,13 @@ router.post('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
         await coupon.save();
         res.render('couponManagement', {
             message: 'Mã giảm giá được tạo thành công!',
-            coupons: await CouponModel.find().sort({ created_at: -1 })
+            coupons: await CouponModel.find().sort({ created_at: -1 }),
         });
     } catch (error) {
         console.error('Error creating coupon:', error.message);
         res.render('couponManagement', {
             message: 'Lỗi khi tạo mã giảm giá!',
-            coupons: await CouponModel.find().sort({ created_at: -1 })
+            coupons: await CouponModel.find().sort({ created_at: -1 }),
         });
     }
 });
@@ -114,13 +113,13 @@ router.post('/coupons/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
         await CouponModel.findByIdAndDelete(id);
         res.render('couponManagement', {
             message: 'Mã giảm giá đã được xóa thành công!',
-            coupons: await CouponModel.find().sort({ created_at: -1 })
+            coupons: await CouponModel.find().sort({ created_at: -1 }),
         });
     } catch (error) {
         console.error('Error deleting coupon:', error.message);
         res.render('couponManagement', {
             message: 'Lỗi khi xóa mã giảm giá!',
-            coupons: await CouponModel.find().sort({ created_at: -1 })
+            coupons: await CouponModel.find().sort({ created_at: -1 }),
         });
     }
 });

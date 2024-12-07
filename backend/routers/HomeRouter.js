@@ -32,10 +32,8 @@ router.get('/', async (req, res) => {
         }
 
         const sortQuery = {};
-        if (sort === 'price')
-            sortQuery.price = 1;
-        else if (sort === 'date')
-            sortQuery.created_at = -1;
+        if (sort === 'price') sortQuery.price = 1;
+        else if (sort === 'date') sortQuery.created_at = -1;
         else sortQuery.name = 1;
 
         const categories = await CategoryModel.find();
@@ -63,7 +61,7 @@ router.get('/', async (req, res) => {
             search: search || '',
             sort: sort || 'name',
             category: category || '',
-            user: req.user || {}
+            user: req.user || {},
         });
     } catch (error) {
         console.error('Error loading home:', error.message);
@@ -99,10 +97,8 @@ router.get('/category/:slug', async (req, res) => {
         }
 
         const sortQuery = {};
-        if (sort === 'price')
-            sortQuery.price = 1;
-        else if (sort === 'date')
-            sortQuery.created_at = -1;
+        if (sort === 'price') sortQuery.price = 1;
+        else if (sort === 'date') sortQuery.created_at = -1;
         else sortQuery.name = 1;
 
         const products = await ProductModel.find({ category: category.slug })
