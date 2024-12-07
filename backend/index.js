@@ -6,8 +6,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 
-// const TransactionDetailRouter = require('./routers/TransactionDetailRouter');
-// const TransactionRouter = require('./routers/TransactionRouter');
 const UserRouter = require('./routers/UserRouter');
 const HomeRouter = require('./routers/HomeRouter');
 const CartRouter = require('./routers/CartRouter');
@@ -36,7 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// app.use('/transactions', TransactionRouter);
 app.use('/', HomeRouter);
 app.use('/users', UserRouter);
 app.use('/cart', CartRouter);
@@ -44,7 +41,6 @@ app.use('/admin', AdminRouter);
 app.use('/products', ProductRouter);
 app.use('/admin', AdminRouter);
 app.use('/orders', OrderRouter);
-// app.use('/transactionDetails', TransactionDetailRouter);
 
 const port = process.env.PORT || 8080;
 const CONNECTION_STRING = process.env.CONNECTION_STRING;
@@ -66,7 +62,7 @@ const connect = async () => {
             dbName: 'ePhoneShop',
         });
         console.log('Connected to MongoDB.');
-        // Chỉ khởi chạy server sau khi kết nối thành công
+
         app.listen(port, () =>
             console.log('Server is running at http://localhost:' + port),
         );

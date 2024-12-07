@@ -29,7 +29,6 @@
                     <td><%= item.product.price.toLocaleString() %> VND</td>
                     <td><%= (item.quantity * item.product.price).toLocaleString() %> VND</td>
                     <td>
-                        <!-- Thêm nút Xoá -->
                         <form action="/cart/remove/<%= item.product._id %>" method="POST">
                             <input type="hidden" name="color" value="<%= item.variant.color %>" />
                             <input type="hidden" name="size" value="<%= item.variant.size %>" />
@@ -42,7 +41,7 @@
         </table>
         <h4 class="text-end">Tổng cộng: <%= total.toLocaleString() %> VND</h4>
         <div class="text-end">
-            <a href="/checkout" class="btn btn-primary">Thanh toán</a>
+            <a href="/cart/checkout" class="btn btn-primary">Thanh toán</a>
         </div>
     <% } else { %>
         <p>Giỏ hàng của bạn hiện đang trống.</p>

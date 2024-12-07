@@ -1,0 +1,140 @@
+/* General Body Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: #343a40;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar a {
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+/* Hero Banner Styling */
+.hero-banner {
+    background: linear-gradient(135deg, #a0d0e0, #e5e5e5);
+    height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.hero-banner h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Product Card Styling */
+.product-card {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.product-card img {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.product-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #007bff;
+    margin: 10px 0;
+}
+
+.product-price {
+    color: #28a745; /* Green for price */
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* Category Title Styling */
+.category-title {
+    margin: 40px 0 20px;
+    font-weight: bold;
+    color: #007bff; /* Muted blue */
+    border-left: 5px solid #5a9bd4;
+    padding-left: 15px;
+}
+
+/* Pagination Styling */
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.pagination .page-link {
+    color: #007bff;
+}
+
+/* Coupon Banner Styling */
+.coupon-banner {
+    background-color: #e9ecef;
+    padding: 20px;
+    border: 2px dashed #6c757d;
+    text-align: center;
+    margin: 30px 0;
+    border-radius: 15px;
+}
+
+.coupon-banner h4 {
+    color: #444;
+    font-weight: bold;
+}
+
+/* Form Styling */
+.form-select,
+.form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.form-select:focus,
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: none;
+}
+
+/* Button Styling */
+.btn-outline-primary {
+    color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}

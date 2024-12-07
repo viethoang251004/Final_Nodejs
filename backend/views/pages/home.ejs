@@ -14,15 +14,15 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sản phẩm..."
-                       value="<%= search %>">
-            </div>
-            <div class="col-md-3">
                 <select name="sort" class="form-control" onchange="this.form.submit()">
                     <option value="name" <%= sort === 'name' ? 'selected' : '' %>>Sắp xếp theo tên</option>
                     <option value="price" <%= sort === 'price' ? 'selected' : '' %>>Sắp xếp theo giá</option>
                     <option value="date" <%= sort === 'date' ? 'selected' : '' %>>Sắp xếp theo thời gian</option>
                 </select>
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sản phẩm..."
+                       value="<%= search %>">
             </div>
         </form>
 
