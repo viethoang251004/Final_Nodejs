@@ -1,0 +1,127 @@
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.order-summary {
+    border: 1px solid #ddd;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.customer-info {
+    margin-bottom: 20px;
+}
+
+.customer-info p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.cart-items {
+    margin-bottom: 20px;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.product-image img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.product-details {
+    flex: 1;
+    margin-left: 20px;
+}
+
+.product-details p {
+    margin: 5px 0;
+}
+
+.total-price {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.discount-code {
+    margin-bottom: 20px;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn {
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+#thankYouModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    max-width: 400px;
+    width: 80%;
+}
+
+#thankYouModal h2 {
+    margin: 0;
+}
+
+#thankYouModal button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#thankYouModal button:hover {
+    background-color: #0056b3;
+}
