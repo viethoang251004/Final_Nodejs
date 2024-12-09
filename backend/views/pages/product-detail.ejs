@@ -1,0 +1,29 @@
+<div class="container mt-5">
+    <!-- Product Title -->
+    <h1 class="display-4 text-center text-primary mb-4"><%= product.name %></h1>
+
+    <!-- Product Description -->
+    <p class="lead text-muted text-center"><%= product.description %></p>
+
+    <!-- Product Price -->
+    <p class="text-center">
+        <span class="h3 text-success"><%= product.price.toLocaleString() %> VND</span>
+    </p>
+
+    <!-- Product Variants Section -->
+    <h3 class="text-info mt-5">Các biến thể</h3>
+    <ul class="list-group">
+        <% product.variants.forEach(variant => { %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span><strong>Màu:</strong> <%= variant.color %></span>
+                <span><strong>Kích thước:</strong> <%= variant.size %></span>
+                <span><strong>Tồn kho:</strong> <%= variant.stock %></span>
+            </li>
+        <% }); %>
+    </ul>
+
+    <!-- Back Button -->
+    <div class="text-center mt-4">
+        <a href="/" class="btn btn-primary btn-lg">Quay lại</a>
+    </div>
+</div>
