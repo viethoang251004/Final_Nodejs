@@ -1,0 +1,132 @@
+<div class="container mt-5">
+    <h1>Thông Tin Thanh Toán</h1>
+
+    <% if (cartItems.length> 0) { %>
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Hình ảnh</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá</th>
+                    <th>Tổng</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% cartItems.forEach(item=> { %>
+                    <tr>
+                        <td>
+                            <img src="<%= item.product.images[0] || '/default-image.jpg' %>"
+                                alt="<%= item.product.name %>" style="max-height: 100px;" />
+                        </td>
+                        <td>
+                            <%= item.product.name %>
+                        </td>
+                        <td>
+                            <%= item.quantity %>
+                        </td>
+                        <td>
+                            <%= item.product.price.toLocaleString() %> VND
+                        </td>
+                        <td>
+                            <%= (item.quantity * item.product.price).toLocaleString() %> VND
+                        </td>
+                    </tr>
+                    <% }); %>
+            </tbody>
+        </table>
+
+        <form id="applyCouponForm" class="mt-3">
+            <div class="input-group mb-3">
+                <input type="text" name="code" id="couponCode" class="form-control" placeholder="Nhập mã giảm giá" />
+                <button type="button" id="applyCouponButton" class="btn btn-primary">Áp dụng</button>
+            </div>
+            <div id="discountFeedback" class="mt-2"></div>
+        </form>
+
+        <h3 class="mt-4">Thông Tin Giao Hàng</h3>
+        <form action="/cart/checkout/confirm" method="POST">
+            <div class="mb-3">
+                <label for="full_name" class="form-label">Họ tên</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Họ và tên" required
+                    value="<%= customer_info.full_name %>" />
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Số điện thoại</label>
+                <input type="text" class="form-control" id="phone" name="phone" placeholder="Số điện thoại" required
+                    value="<%= customer_info.phone %>" />
+            </div>
+            <div class="mb-3">
+                <label for="address" class="form-label">Địa chỉ</label>
+                <input type="text" class="form-control" id="address" name="address" placeholder="Địa chỉ" required
+                    value="<%= customer_info.address %>" />
+            </div>
+
+
+            <h3 class="mt-4">Phương Thức Vận Chuyển</h3>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="shippingMethod" id="standardShipping" value="20000"
+                    required>
+                <label class="form-check-label" for="standardShipping">Vận chuyển thường (+20,000 VND)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="shippingMethod" id="expressShipping" value="50000">
+                <label class="form-check-label" for="expressShipping">Vận chuyển nhanh (+50,000 VND)</label>
+            </div>
+            <p class="text-end mt-3">Phí vận chuyển: <span id="shippingCost">0</span> VND</p>
+
+            <h3 class="mt-4">Phương Thức Thanh Toán</h3>
+            <div class="form-check">
+                <input class="form-check-input payment-method" type="radio" name="paymentMethod" id="cod" value="COD"
+                    required>
+                <label class="form-check-label" for="cod">Thanh toán khi nhận hàng (COD)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input payment-method" type="radio" name="paymentMethod" id="creditCard"
+                    value="creditCard">
+                <label class="form-check-label" for="creditCard">Thanh toán qua thẻ tín dụng</label>
+            </div>
+
+            <div id="creditCardInfo" class="mt-3" style="display: none;">
+                <div class="mb-3">
+                    <label for="bankName" class="form-label">Tên ngân hàng</label>
+                    <input type="text" class="form-control" id="bankName" name="bankName"
+                        placeholder="Nhập tên ngân hàng" required value="<%= customer_info.bankName %>" />
+                </div>
+                <div class="mb-3">
+                    <label for="accountNumber" class="form-label">Số tài khoản</label>
+                    <input type="text" class="form-control" id="accountNumber" name="accountNumber"
+                        placeholder="Nhập số tài khoản" required value="<%= customer_info.accountNumber %>" />
+                </div>
+                <div class="mb-3">
+                    <label for="accountName" class="form-label">Tên chủ tài khoản</label>
+                    <input type="text" class="form-control" id="accountName" name="accountName"
+                        placeholder="Nhập tên chủ tài khoản" required value="<%= customer_info.accountName %>" />
+                </div>
+            </div>
+
+            <div class="text-end mt-4">
+                <h4>Tổng cộng: <span id="totalAmount">
+                        <%= total.toLocaleString() %>
+                    </span> VND</h4>
+                <% if (discountAmount> 0) { %>
+                    <p class="text-success">Giảm giá: <span id="discountAmount">- <%= discountAmount.toLocaleString() %>
+                                VND</span></p>
+                    <h4>Thành tiền: <span id="finalAmount">
+                            <%= (total - discountAmount + shippingCost).toLocaleString() %>
+                        </span> VND</h4>
+                    <% } else { %>
+                        <h4>Thành tiền: <span id="finalAmount">
+                                <%= total.toLocaleString() %>
+                            </span> VND</h4>
+                        <% } %>
+            </div>
+            <button type="submit" class="btn btn-success mt-4 w-100">Xác Nhận Thanh Toán</button>
+        </form>
+        <% } else { %>
+            <p>Không có sản phẩm nào trong giỏ hàng để thanh toán.</p>
+            <% } %>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="/js/checkout.js?v=<%= new Date().getTime() %>"></script>
