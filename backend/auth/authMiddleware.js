@@ -12,7 +12,9 @@ const authMiddleware = async (req, res, next) => {
 
             // Tìm thông tin người dùng trong cơ sở dữ liệu dựa trên ID từ token
             // Chỉ lấy các trường 'name' và 'email'
-            req.user = await UserModel.findById(decoded.id).select('name email');
+            req.user = await UserModel.findById(decoded.id).select(
+                'name email',
+            );
         }
     } catch (error) {
         // Nếu có lỗi, đặt giá trị `req.user` thành null

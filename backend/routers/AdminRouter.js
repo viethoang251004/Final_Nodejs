@@ -5,21 +5,21 @@ const ProductModel = require('../models/ProductModel');
 const OrderModel = require('../models/OrderModel');
 const CouponModel = require('../models/CouponModel');
 const AnalyticsModel = require('../models/AnalyticsModel');
-const Product = require("../models/ProductModel");
-const Category = require("../models/CategoryModel");
+const Product = require('../models/ProductModel');
+const Category = require('../models/CategoryModel');
 const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 const path = require('path');
 
-const {validationResult} = require("express-validator");
+const { validationResult } = require('express-validator');
 
 const CheckAdminAccess = require('../auth/CheckAdminAccess');
 const CheckLogin = require('../auth/CheckLogin');
 
-const addProductValidator = require("./validators/addProductValidator");
-const editProductValidator = require("./validators/editProductValidator");
-const CheckRole = require("../auth/CheckAdminAccess");
-const Order = require("../models/OrderModel");
+const addProductValidator = require('./validators/addProductValidator');
+const editProductValidator = require('./validators/editProductValidator');
+const CheckRole = require('../auth/CheckAdminAccess');
+const Order = require('../models/OrderModel');
 
 const allProductLimiter = rateLimit({
     windowMs: 10 * 1000, // 10s
@@ -72,42 +72,54 @@ router.get('/dashboard', CheckLogin, CheckAdminAccess, async (req, res) => {
     }
 });
 
-router.get('/dashboard/products', CheckLogin, CheckAdminAccess, async (req, res) => {
-    const { page = 1, limit = 10, search = '' } = req.query;
+router.get(
+    '/dashboard/products',
+    CheckLogin,
+    CheckAdminAccess,
+    async (req, res) => {
+        const { page = 1, limit = 10, search = '' } = req.query;
 
-    try {
-        const query = search ? { name: { $regex: search, $options: 'i' } } : {};
-        const products = await ProductModel.find(query)
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
+        try {
+            const query = search
+                ? { name: { $regex: search, $options: 'i' } }
+                : {};
+            const products = await ProductModel.find(query)
+                .skip((page - 1) * limit)
+                .limit(parseInt(limit));
 
-        const total = await ProductModel.countDocuments(query);
+            const total = await ProductModel.countDocuments(query);
 
-        res.render('productManagement', {
-            products,
-            currentPage: page,
-            totalPages: Math.ceil(total / limit),
-        });
-    } catch (error) {
-        console.error('Error fetching products:', error.message);
-        res.status(500).send('Lỗi khi tải danh sách sản phẩm.');
-    }
-});
+            res.render('productManagement', {
+                products,
+                currentPage: page,
+                totalPages: Math.ceil(total / limit),
+            });
+        } catch (error) {
+            console.error('Error fetching products:', error.message);
+            res.status(500).send('Lỗi khi tải danh sách sản phẩm.');
+        }
+    },
+);
 
-router.get('/dashboard/orders', CheckLogin, CheckAdminAccess, async (req, res) => {
-    try {
-        const orders = await OrderModel.find().populate('user_id');
+router.get(
+    '/dashboard/orders',
+    CheckLogin,
+    CheckAdminAccess,
+    async (req, res) => {
+        try {
+            const orders = await OrderModel.find().populate('user_id');
 
-        res.render('layouts/main', {
-            title: 'Order Management',
-            body: 'orderManagement',
-            orders,
-        });
-    } catch (error) {
-        console.error('Error fetching orders:', error.message);
-        res.status(500).send('Lỗi khi tải danh sách đơn hàng.');
-    }
-});
+            res.render('layouts/main', {
+                title: 'Order Management',
+                body: 'orderManagement',
+                orders,
+            });
+        } catch (error) {
+            console.error('Error fetching orders:', error.message);
+            res.status(500).send('Lỗi khi tải danh sách đơn hàng.');
+        }
+    },
+);
 
 router.get('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
     try {
@@ -168,46 +180,52 @@ router.post('/coupons/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
     }
 });
 
-router.get('/products', CheckLogin, CheckAdminAccess, allProductLimiter, async (req, res) => {
-    try {
-        const products = await Product.find();
-        const categories = await Category.find();
-        const colors = [
-            'Red',
-            'Blue',
-            'Green',
-            'Yellow',
-            'Black',
-            'White',
-            'Pink',
-            'Purple',
-            'Brown',
-            'Orange',
-            'Cyan',
-            'Magenta',
-            'Grey',
-            'Teal',
-            'Lime',
-            'Maroon',
-        ];
+router.get(
+    '/products',
+    CheckLogin,
+    CheckAdminAccess,
+    allProductLimiter,
+    async (req, res) => {
+        try {
+            const products = await Product.find();
+            const categories = await Category.find();
+            const colors = [
+                'Red',
+                'Blue',
+                'Green',
+                'Yellow',
+                'Black',
+                'White',
+                'Pink',
+                'Purple',
+                'Brown',
+                'Orange',
+                'Cyan',
+                'Magenta',
+                'Grey',
+                'Teal',
+                'Lime',
+                'Maroon',
+            ];
 
-        res.render('layouts/admin/main', {
-            title: 'Product Management',
-            body: 'productManagement',
-            style: 'productManagement-style',
-            products,
-            categories: categories || [],
-            colors,
-            errors: null,
-            formData: {},
-            editProduct: null,
-            variant: {},
-        });
-    } catch (error) {
-        console.error('Error fetching data:', error.message);
-        res.status(500).send('Error loading product list');
-    }
-});
+            res.render('layouts/admin/main', {
+                title: 'Product Management',
+                body: 'productManagement',
+                style: 'productManagement-style',
+                products,
+                categories: categories || [],
+                colors,
+                errors: null,
+                formData: {},
+                editProduct: null,
+                variant: {},
+            });
+        } catch (error) {
+            console.error('Error fetching data:', error.message);
+            res.status(500).send('Error loading product list');
+        }
+    },
+);
 
 router.post(
     '/products/add',
@@ -269,38 +287,44 @@ router.post(
     },
 );
 
-router.get('/products/edit/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const product = await Product.findById(id);
-        const categories = await Category.find();
-        const colors = [
-            'Red',
-            'Blue',
-            'Green',
-            'Yellow',
-            'Black',
-            'White',
-            'Pink',
-            'Purple',
-            'Brown',
-            'Orange',
-            'Cyan',
-            'Magenta',
-            'Grey',
-            'Teal',
-            'Lime',
-            'Maroon',
-        ];
+router.get(
+    '/products/edit/:id',
+    CheckLogin,
+    CheckAdminAccess,
+    async (req, res) => {
+        try {
+            const { id } = req.params;
+            const product = await Product.findById(id);
+            const categories = await Category.find();
+            const colors = [
+                'Red',
+                'Blue',
+                'Green',
+                'Yellow',
+                'Black',
+                'White',
+                'Pink',
+                'Purple',
+                'Brown',
+                'Orange',
+                'Cyan',
+                'Magenta',
+                'Grey',
+                'Teal',
+                'Lime',
+                'Maroon',
+            ];
 
-        if (!product) return res.status(404).send('Không tìm thấy sản phẩm');
+            if (!product)
+                return res.status(404).send('Không tìm thấy sản phẩm');
 
-        res.json({ product, categories, colors });
-    } catch (error) {
-        console.error('Lỗi khi tải sản phẩm:', error.message);
-        res.status(500).send('Lỗi khi tải sản phẩm');
-    }
-});
+            res.json({ product, categories, colors });
+        } catch (error) {
+            console.error('Lỗi khi tải sản phẩm:', error.message);
+            res.status(500).send('Lỗi khi tải sản phẩm');
+        }
+    },
+);
 
 router.post(
     '/products/edit/:id',
@@ -360,71 +384,89 @@ router.post(
     },
 );
 
-router.post('/products/delete/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
-    const { id } = req.params;
+router.post(
+    '/products/delete/:id',
+    CheckLogin,
+    CheckAdminAccess,
+    async (req, res) => {
+        const { id } = req.params;
 
-    try {
-        if (!id) {
+        try {
+            if (!id) {
+                return res
+                    .status(400)
+                    .json({ message: 'Không có thông tin mã sản phẩm' });
+            }
+
+            const product = await Product.findByIdAndDelete(id);
+
+            if (product) {
+                return res
+                    .status(200)
+                    .json({ message: 'Đã xóa sản phẩm thành công' });
+            } else {
+                return res
+                    .status(404)
+                    .json({ message: 'Không tìm thấy sản phẩm' });
+            }
+        } catch (error) {
+            if (error.message.includes('Cast to ObjectId failed')) {
+                return res
+                    .status(400)
+                    .json({ message: 'Đây không phải là một id hợp lệ' });
+            }
             return res
-                .status(400)
-                .json({ message: 'Không có thông tin mã sản phẩm' });
+                .status(500)
+                .json({ message: 'Lỗi máy chủ: ' + error.message });
         }
+    },
+);
 
-        const product = await Product.findByIdAndDelete(id);
+router.post(
+    '/products/categories/add',
+    CheckLogin,
+    CheckAdminAccess,
+    async (req, res) => {
+        try {
+            const { name, slug, description } = req.body;
 
-        if (product) {
-            return res
-                .status(200)
-                .json({ message: 'Đã xóa sản phẩm thành công' });
-        } else {
-            return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
-        }
-    } catch (error) {
-        if (error.message.includes('Cast to ObjectId failed')) {
-            return res
-                .status(400)
-                .json({ message: 'Đây không phải là một id hợp lệ' });
-        }
-        return res
-            .status(500)
-            .json({ message: 'Lỗi máy chủ: ' + error.message });
-    }
-});
+            if (!name || !slug) {
+                return res
+                    .status(400)
+                    .json({
+                        success: false,
+                        message: 'Tên và Slug là bắt buộc',
+                    });
+            }
 
-router.post('/products/categories/add', CheckLogin, CheckAdminAccess, async (req, res) => {
-    try {
-        const { name, slug, description } = req.body;
-
-        if (!name || !slug) {
-            return res
-                .status(400)
-                .json({ success: false, message: 'Tên và Slug là bắt buộc' });
-        }
-
-        const newCategory = new Category({
-            name,
-            slug,
-            description,
-        });
-
-        await newCategory.save();
-        return res
-            .status(201)
-            .json({ success: true, message: 'Category added successfully' });
-    } catch (error) {
-        if (error.code === 11000) {
-            return res.status(400).json({
-                success: false,
-                message: `Category with name "${req.body.name}" already exists`,
+            const newCategory = new Category({
+                name,
+                slug,
+                description,
             });
-        }
 
-        console.error('Error adding category:', error.message);
-        return res
-            .status(500)
-            .json({ success: false, message: 'Error adding category' });
-    }
-});
+            await newCategory.save();
+            return res
+                .status(201)
+                .json({
+                    success: true,
+                    message: 'Category added successfully',
+                });
+        } catch (error) {
+            if (error.code === 11000) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Category with name "${req.body.name}" already exists`,
+                });
+            }
+
+            console.error('Error adding category:', error.message);
+            return res
+                .status(500)
+                .json({ success: false, message: 'Error adding category' });
+        }
+    },
+);
 
 router.post('/orders/create', CheckLogin, CheckRole, async (req, res) => {
     try {
@@ -455,24 +497,32 @@ router.post('/orders/create', CheckLogin, CheckRole, async (req, res) => {
     }
 });
 
-router.get('/orders/detail/:id', CheckLogin, CheckRole, detailOrderLimiter, async (req, res) => {
-    try {
-        const order = await Order.findById(req.params.id).populate(
-            'products.product_id',
-        );
+router.get(
+    '/orders/detail/:id',
+    CheckLogin,
+    CheckRole,
+    detailOrderLimiter,
+    async (req, res) => {
+        try {
+            const order = await Order.findById(req.params.id).populate(
+                'products.product_id',
+            );
 
-        if (!order) {
-            return res.status(404).json({ error: 'Không tìm thấy đơn hàng.' });
+            if (!order) {
+                return res
+                    .status(404)
+                    .json({ error: 'Không tìm thấy đơn hàng.' });
+            }
+
+            res.render('order-detail', { order });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                error: 'Đã xảy ra lỗi khi lấy thông tin đơn hàng.',
+            });
         }
-
-        res.render('order-detail', { order });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: 'Đã xảy ra lỗi khi lấy thông tin đơn hàng.',
-        });
-    }
-});
+    },
+);
 
 router.post('orders/detail/:id', CheckLogin, CheckRole, async (req, res) => {
     try {
@@ -508,32 +558,38 @@ router.post('orders/detail/:id', CheckLogin, CheckRole, async (req, res) => {
     }
 });
 
-router.get('/orders', CheckLogin, CheckRole, allOrderLimiter, async (req, res) => {
-    try {
-        const { page = 1, limit = 10 } = req.query;
+router.get(
+    '/orders',
+    CheckLogin,
+    CheckRole,
+    allOrderLimiter,
+    async (req, res) => {
+        try {
+            const { page = 1, limit = 10 } = req.query;
 
-        const orders = await Order.find()
-            .sort({ created_at: -1 }) // Sắp xếp giảm dần theo ngày
-            .skip((page - 1) * limit) // Bỏ qua các đơn ở trang trước
-            .limit(parseInt(limit)); // Lấy số đơn hàng theo `limit`
+            const orders = await Order.find()
+                .sort({ created_at: -1 }) // Sắp xếp giảm dần theo ngày
+                .skip((page - 1) * limit) // Bỏ qua các đơn ở trang trước
+                .limit(parseInt(limit)); // Lấy số đơn hàng theo `limit`
 
-        const totalOrders = await Order.countDocuments();
-        const totalPages = Math.ceil(totalOrders / limit);
+            const totalOrders = await Order.countDocuments();
+            const totalPages = Math.ceil(totalOrders / limit);
 
-        res.render('layouts/admin/main', {
-            title: 'Order History',
-            body: 'orderHistory',
-            style: 'orderHistory-style',
-            orders,
-            currentPage: parseInt(page),
-            totalPages,
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: 'Đã xảy ra lỗi khi lấy danh sách đơn hàng.',
-        });
-    }
-});
+            res.render('layouts/admin/main', {
+                title: 'Order Management',
+                body: 'orderManagement',
+                style: 'orderManagement-style',
+                orders,
+                currentPage: parseInt(page),
+                totalPages,
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                error: 'Đã xảy ra lỗi khi lấy danh sách đơn hàng.',
+            });
+        }
+    },
+);
 
 module.exports = router;

@@ -3,7 +3,7 @@ const router = express.Router();
 const CategoryModel = require('../models/CategoryModel');
 const ProductModel = require('../models/ProductModel');
 const authMiddleware = require('../auth/authMiddleware');
-const rateLimit = require("express-rate-limit");
+const rateLimit = require('express-rate-limit');
 
 const allProductLimiter = rateLimit({
     windowMs: 10 * 1000, // 10s
