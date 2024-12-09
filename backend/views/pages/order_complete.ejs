@@ -1,0 +1,45 @@
+<div class="container">
+    <h1>Đặt Hàng Thành Công</h1>
+    <p>Cảm ơn bạn đã đặt hàng tại <strong>PhoneShop</strong>. Đơn hàng của bạn đã được ghi nhận.</p>
+
+    <h3>Thông Tin Đơn Hàng</h3>
+    <ul>
+        <li><strong>Mã Đơn Hàng:</strong>
+            <%= order._id %>
+        </li>
+        <li><strong>Tổng Giá:</strong>
+            <%= order.total_price.toLocaleString('vi-VN') %> VND
+        </li>
+        <li><strong>Phương Thức Thanh Toán:</strong>
+            <%= order.payment_method %>
+        </li>
+    </ul>
+
+    <h3>Thông Tin Khách Hàng</h3>
+    <ul>
+        <li><strong>Tên:</strong>
+            <%= order.customer_info.full_name %>
+        </li>
+        <li><strong>Số Điện Thoại:</strong>
+            <%= order.customer_info.phone %>
+        </li>
+        <li><strong>Địa Chỉ:</strong>
+            <%= order.customer_info.address %>
+        </li>
+    </ul>
+
+    <h3>Sản Phẩm</h3>
+    <ul>
+        <% order.products.forEach((product)=> { %>
+            <li>
+                <strong>
+                    <%= product.product_id.name || 'Sản phẩm không xác định' %>
+                </strong>
+                - Số lượng: <%= product.quantity %>
+                    - Giá: <%= product.price.toLocaleString('vi-VN') %> VND
+            </li>
+            <% }); %>
+    </ul>
+
+    <a href="/" class="btn btn-primary">Quay Lại Trang Chủ</a>
+</div>
