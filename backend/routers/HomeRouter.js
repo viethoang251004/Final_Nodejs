@@ -287,10 +287,4 @@ router.get('/category/:slug', async (req, res) => {
     }
 });
 
-router.get('/users/logout', (req, res) => {
-    res.clearCookie('userDataLogin');
-    res.clearCookie('userRole');
-    res.redirect('/');
-});
-
 module.exports = router;
