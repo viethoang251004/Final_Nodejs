@@ -197,7 +197,7 @@ router.get('/checkout', async (req, res) => {
     let discountCode = req.session.discountCode || '';
     let discountAmount = req.session.discountAmount || 0;
     let shippingCost = req.session.shippingCost || 20000;
-    let customerInfo = {
+    let customer_info = {
         full_name: '',
         phone: '',
         address: '',
@@ -235,13 +235,13 @@ router.get('/checkout', async (req, res) => {
                 user.addresses[0];
 
             if (defaultAddress) {
-                customerInfo = {
+                customer_info = {
                     full_name: defaultAddress.full_name || user.name,
                     phone: defaultAddress.phone || '',
                     address: defaultAddress.address || '',
                 };
             } else {
-                customerInfo = {
+                customer_info = {
                     full_name: user.name || '',
                     phone: '',
                     address: '',
@@ -285,16 +285,18 @@ router.get('/checkout', async (req, res) => {
                 discountAmount = 0;
             }
         }
-        const finalTotal = subtotal - discountAmount;
-        res.render('checkout', {
+        const total_price = subtotal - discountAmount;
+        res.render('layouts/user/main', {
+            title: 'Checkout Page',
+            body: 'checkout',
             cartItems,
             total,
             user: req.user || null,
             discountCode,
             discountAmount,
             shippingCost,
-            finalTotal,
-            customerInfo,
+            total_price,
+            customer_info,
         });
     } catch (error) {
         console.error('Error rendering checkout page:', error);
@@ -307,7 +309,7 @@ router.post('/checkout/confirm', async (req, res) => {
     let cartItems = [];
     let total = 0;
     let discountAmount = 0;
-    let customerInfo = {
+    let customer_info = {
         full_name: req.body.full_name || '',
         phone: req.body.phone || '',
         address: req.body.address || '',
@@ -370,15 +372,18 @@ router.post('/checkout/confirm', async (req, res) => {
             }
         }
         let subtotal = total - discountAmount;
-        const finalTotal = subtotal + shippingCost;
+        const total_price = subtotal + shippingCost;
 
-        return res.render('checkout_confirm', {
+        return res.render('layouts/user/main', {
+            title: 'Checkout Confirm',
+            body: 'checkout_confirm',
+            style: 'checkout_confirm-style',
             cartItems,
             total,
             discountAmount,
-            finalTotal,
+            total_price,
             discountCode,
-            customerInfo,
+            customer_info,
             paymentMethod,
             shippingCost,
             user: req.user || null,
@@ -451,25 +456,83 @@ router.post('/checkout/apply-coupon', async (req, res) => {
             finalAmount: total - discountAmount + shippingCost,
         });
     } catch (error) {
-        console.error('Error applying coupon:', error);
+        console.error('Error:', error);
         res.status(500).send('Có lỗi xảy ra khi áp dụng mã giảm giá.');
     }
 });
 
-router.post('/checkout/complete', (req, res) => {
-    const {
-        full_name,
-        phone,
-        address,
-        paymentMethod,
-        cartItems,
-        shippingCost,
-    } = req.body;
+router.post('/checkout/complete', async (req, res) => {
+    const { full_name, phone, address, paymentMethod, shippingCost } = req.body;
+    let cartItems = [];
+    let products = [];
+    let total = 0;
+    let discountAmount = 0;
+    const discountCode = req.session.discountCode || '';
+    const userId = req.user ? req.user._id : null;
 
-    req.session.cart = [];
-    req.session.total = 0;
+    try {
+        // Parse cart items from request body
+        cartItems = JSON.parse(req.body.cartItems || '[]');
 
-    res.redirect('/cart');
+        // Validate cart items
+        if (!Array.isArray(cartItems) || cartItems.length === 0) {
+            return res.status(400).send('Giỏ hàng trống, không thể tạo đơn hàng.');
+        }
+
+        // Map cart items to order products
+        products = cartItems.map((item) => ({
+            product_id: item.product._id || item.product_id,
+            quantity: item.quantity,
+            price: item.product.price,
+            variant: item.variant || null,
+        }));
+
+        // Calculate total price
+        total = cartItems.reduce(
+            (sum, item) => sum + item.quantity * (item.variant?.price || item.product.price),
+            0,
+        );
+
+        // Apply discount if applicable
+        if (discountCode) {
+            const coupon = await CouponModel.findOne({ code: discountCode });
+            if (coupon && new Date(coupon.expires_at) >= new Date()) {
+                discountAmount = Math.min((total * coupon.discount) / 100, total);
+            }
+        }
+
+        const subtotal = total - discountAmount;
+        const finalPrice = subtotal + parseInt(shippingCost, 10);
+
+        // Create order
+        const newOrder = new OrderModel({
+            user_id: userId,
+            customer_info: { full_name, phone, address },
+            products,
+            total_price: finalPrice,
+            discount: discountAmount,
+            payment_method: paymentMethod,
+            shipping_cost: shippingCost,
+        });
+
+        await newOrder.save();
+
+        // Clear session cart if not logged in
+        if (!userId) {
+            req.session.cart = [];
+        }
+
+        res.render('layouts/user/main', {
+            title: 'Order Complete',
+            body: 'order_complete',
+            style: 'order_complete-style',
+            order: newOrder,
+            user: req.user || null,
+        });
+    } catch (error) {
+        console.error('Error completing order:', error.message);
+        res.status(500).send('Có lỗi xảy ra khi hoàn tất đơn hàng.');
+    }
 });
 
 module.exports = router;
