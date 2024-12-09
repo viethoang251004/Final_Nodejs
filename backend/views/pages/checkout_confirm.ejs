@@ -1,0 +1,102 @@
+<div class="container">
+    <h1 class="page-title">Xác Nhận Đơn Hàng</h1>
+    <div class="order-summary">
+        <h2>Tổng Quan Đơn Hàng</h2>
+        <div class="customer-info">
+            <p><strong>Họ và tên:</strong>
+                <%= customer_info.full_name %>
+            </p>
+            <p><strong>Số điện thoại:</strong>
+                <%= customer_info.phone %>
+            </p>
+            <p><strong>Địa chỉ:</strong>
+                <%= customer_info.address %>
+            </p>
+            <p><strong>Phương thức thanh toán:</strong>
+                <%= paymentMethod %>
+            </p>
+
+            <% if (paymentMethod==='creditCard' ) { %>
+                <div class="bank-transfer-info">
+                    <p><strong>Tên ngân hàng:</strong>
+                        <%= customer_info.bankName %>
+                    </p>
+                    <p><strong>Số tài khoản:</strong>
+                        <%= customer_info.accountNumber %>
+                    </p>
+                    <p><strong>Tên chủ tài khoản:</strong>
+                        <%= customer_info.accountName %>
+                    </p>
+                </div>
+                <% } %>
+        </div>
+
+        <div class="cart-items">
+            <% cartItems.forEach(item=> { %>
+                <div class="cart-item">
+                    <div class="product-image">
+                        <img src="<%= item.product.images[0] || '/default-image.jpg' %>" alt="<%= item.product.name %>"
+                            style="max-height: 100px;" />
+                    </div>
+                    <div class="product-details">
+                        <p><strong>
+                                <%= item.product.name %>
+                            </strong></p>
+                        <p>Kích thước: <%= item.variant.size %> | Màu sắc: <%= item.variant.color %>
+                        </p>
+                        <p>Số lượng: <%= item.quantity %>
+                        </p>
+                        <p>Giá: <%= item.price %> VND</p>
+                    </div>
+                </div>
+                <% }); %>
+        </div>
+
+        <div class="total-price">
+            <p><strong>Tổng Tiền Trước Giảm Giá:</strong>
+                <%= total.toLocaleString() %> VND
+            </p>
+            <p><strong>Số Tiền Giảm Giá:</strong>
+                <%= discountAmount.toLocaleString() %> VND
+            </p>
+            <p><strong>Phí Vận Chuyển:</strong>
+                <%= shippingCost.toLocaleString() %> VND
+            </p>
+            <p><strong>Tổng Tiền Sau Giảm Giá:</strong>
+                <%= total_price.toLocaleString() %> VND
+            </p>
+        </div>
+
+        <div class="discount-code">
+            <% if (discountCode) { %>
+                <p><strong>Mã Giảm Giá Đã Áp Dụng:</strong>
+                    <%= discountCode %>
+                </p>
+                <% } else { %>
+                    <p><strong>Không có mã giảm giá áp dụng.</strong></p>
+                    <% } %>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/cart/checkout" class="btn btn-secondary">Quay lại trang checkout</a>
+            <form action="/cart/checkout/complete" method="POST" id="checkoutForm">
+                <input type="hidden" name="full_name" value="<%= customer_info.full_name %>">
+                <input type="hidden" name="phone" value="<%= customer_info.phone %>">
+                <input type="hidden" name="address" value="<%= customer_info.address %>">
+                <input type="hidden" name="paymentMethod" value="<%= paymentMethod %>">
+                <input type="hidden" name="shippingCost" id="shippingCostInput" value="<%= shippingCost %>">
+                <input type="hidden" name="cartItems" value="<%= JSON.stringify(cartItems) %>">
+                <button type="submit" class="btn btn-primary">Xác Nhận Đơn Hàng</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="thankYouModal" style="display: none;">
+    <div class="modal-content">
+        <h2>Cảm ơn bạn!</h2>
+        <p>Đơn hàng của bạn đã được xác nhận.</p>
+        <button id="closeModal">Đóng</button>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/checkout_confirm.js?v=<%= new Date().getTime() %>"></script>
