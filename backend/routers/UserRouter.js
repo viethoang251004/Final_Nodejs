@@ -9,12 +9,10 @@ const User = require('../models/UserModel');
 const loginValidator = require('./validators/loginValidator');
 const registerValidator = require('./validators/registerValidator');
 
-// Route GET Login
 Router.get('/login', (req, res) => {
     res.render('login');
 });
 
-// Route POST Login
 Router.post('/login', loginValidator, (req, res) => {
     let result = validationResult(req);
 
@@ -60,11 +58,10 @@ Router.post('/login', loginValidator, (req, res) => {
                                     secure: false,
                                 });
 
-                                // Chuyển hướng dựa trên vai trò
                                 if (user.role === 'ADMIN') {
-                                    return res.redirect('/admin'); // Admin chuyển hướng đến dashboard
+                                    return res.redirect('/admin/dashboard');
                                 } else {
-                                    return res.redirect('/'); // Người dùng bình thường về trang chính
+                                    return res.redirect('/');
                                 }
                             },
                         );
@@ -81,19 +78,16 @@ Router.post('/login', loginValidator, (req, res) => {
     }
 });
 
-// Route GET Register
 Router.get('/register', (req, res) => {
     res.render('register', { errorMessage: '' });
 });
 
-// Route POST Register
 Router.post('/register', registerValidator, (req, res) => {
     let result = validationResult(req);
     if (result.errors.length === 0) {
         let { name, email, password, role, addresses, social_auth, points } =
             req.body;
 
-        // Cấm tạo tài khoản ADMIN
         if (role === 'ADMIN') {
             return res.status(403).render('register', {
                 errorMessage: 'Bạn không có quyền tạo tài khoản ADMIN.',
@@ -116,7 +110,7 @@ Router.post('/register', registerValidator, (req, res) => {
                     name: name.toLowerCase(),
                     email: email.toLowerCase(),
                     password: hashed,
-                    role: role || 'CUSTOMER', // Mặc định là CUSTOMER
+                    role: role || 'CUSTOMER', // Default is  CUSTOMER
                     addresses: addresses || [],
                     social_auth: social_auth || {},
                     points: points || 0,

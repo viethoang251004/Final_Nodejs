@@ -1,0 +1,62 @@
+<div class="container mt-5">
+    <h1>Quản Lý Mã Giảm Giá</h1>
+
+    <% if (message && message.trim() !== '') { %>
+        <div id="notification" class="alert alert-info show">
+            <p><%= message %></p>
+            <button onclick="closeNotification()" class="btn btn-primary">Đóng</button>
+        </div>
+    <% } %>
+
+    <form action="/admin/coupons" method="POST" class="mb-4">
+        <div class="form-group">
+            <label for="code" class="form-label">Mã giảm giá</label>
+            <input type="text" class="form-control" id="code" name="code" required>
+        </div>
+        <div class="form-group">
+            <label for="discount" class="form-label">Giá trị giảm giá (%)</label>
+            <input type="number" class="form-control" id="discount" name="discount" min="1" max="100" required>
+        </div>
+        <div class="form-group">
+            <label for="expires_at" class="form-label">Ngày hết hạn</label>
+            <input type="date" class="form-control" id="expires_at" name="expires_at" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Tạo Mã</button>
+    </form>
+
+    <h2>Danh Sách Mã Giảm Giá</h2>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Mã</th>
+            <th>Giảm giá (%)</th>
+            <th>Ngày hết hạn</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% coupons.forEach(coupon => { %>
+            <tr>
+                <td><%= coupon.code %></td>
+                <td><%= coupon.discount %></td>
+                <td><%= new Date(coupon.expires_at).toLocaleDateString() %></td>
+                <td><%= coupon.is_active ? 'Chưa sử dụng' : 'Đã sử dụng' %></td>
+                <td><%= new Date(coupon.created_at).toLocaleDateString() %></td>
+                <td>
+                    <form action="/admin/coupons/<%= coupon._id %>" method="POST">
+                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function closeNotification() {
+        document.getElementById('notification').classList.remove('show');
+    }
+</script>

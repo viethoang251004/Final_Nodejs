@@ -3,10 +3,23 @@ const router = express.Router();
 const CategoryModel = require('../models/CategoryModel');
 const ProductModel = require('../models/ProductModel');
 const authMiddleware = require('../auth/authMiddleware');
+const rateLimit = require("express-rate-limit");
+
+const allProductLimiter = rateLimit({
+    windowMs: 10 * 1000, // 10s
+    max: 5,
+    message: 'Không thể gửi quá 5 request trong 10s khi đọc danh sách sản phẩm',
+});
+
+const detailProductLimiter = rateLimit({
+    windowMs: 10 * 1000, // 10s
+    max: 2,
+    message: 'Không thể gửi quá 2 request trong 10s khi đọc chi tiết sản phẩm',
+});
 
 router.use(authMiddleware);
 
-router.get('/', async (req, res) => {
+router.get('/', allProductLimiter, async (req, res) => {
     try {
         const {
             page = 1,
@@ -69,7 +82,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/products/:id', async (req, res) => {
+router.get('/products/:id', detailProductLimiter, async (req, res) => {
     try {
         const product = await ProductModel.findById(req.params.id).populate(
             'variants',

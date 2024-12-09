@@ -48,7 +48,7 @@
                            onclick="openEditModal('<%= product._id %>')">
                             <i class="bi bi-pencil-square"></i> Sửa
                         </a>
-                        <form action="/products/delete/<%= product._id %>" method="POST" class="d-inline">
+                        <form action="admin/products/delete/<%= product._id %>" method="POST" class="d-inline">
                             <button type="button" class="btn btn-danger btn-sm"
                                     onclick="confirmDelete('<%= product._id %>')">
                                 <i class="bi bi-trash"></i> Xóa
@@ -66,7 +66,7 @@
 <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <form method="POST" action="/products/add" enctype="multipart/form-data">
+            <form method="POST" action="/admin/products/add" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title">Thêm sản phẩm mới</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -149,7 +149,7 @@
 <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <form method="POST" action="/products/edit/<%= editProduct ? editProduct._id : '' %>" enctype="multipart/form-data" id="editProductForm">
+            <form method="POST" action="/admin/products/edit/<%= editProduct ? editProduct._id : '' %>" enctype="multipart/form-data" id="editProductForm">
                 <div class="modal-header">
                     <h5 class="modal-title">Chỉnh sửa sản phẩm</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -192,7 +192,7 @@
 <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form id="addCategoryForm" action="/products/categories/add" method="POST">
+            <form id="addCategoryForm" action="/admin/products/categories/add" method="POST">
                 <div class="modal-header">
                     <h5 class="modal-title">Thêm danh mục sản phẩm</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">

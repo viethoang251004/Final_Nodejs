@@ -1,5 +1,5 @@
 function openEditModal(productId) {
-    fetch('/products/edit/' + productId)
+    fetch('/admin/products/edit/' + productId)
         .then((response) => {
             if (!response.ok) {
                 throw new Error('Failed to fetch product data');
@@ -55,7 +55,7 @@ function openEditModal(productId) {
 
             $('#editProductForm').attr(
                 'action',
-                '/products/edit/' + product._id,
+                '/admin/products/edit/' + product._id,
             );
 
             $('#editProductModal').modal('show');
@@ -82,7 +82,7 @@ function handleAddCategory() {
         };
 
         try {
-            const response = await fetch('/products/categories/add', {
+            const response = await fetch('/admin/products/categories/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
@@ -196,7 +196,7 @@ $('#confirmDeleteButton').on('click', async () => {
     if (productIdToDelete) {
         try {
             const response = await fetch(
-                `/products/delete/${productIdToDelete}`,
+                `/admin/products/delete/${productIdToDelete}`,
                 {
                     method: 'POST',
                     headers: {
@@ -231,7 +231,7 @@ function showNotification(title, message) {
     $('#notificationModal').modal('show');
 }
 
-$('form[action="/products/add"]').on('submit', async (event) => {
+$('form[action="/admin/products/add"]').on('submit', async (event) => {
     event.preventDefault();
     const form = event.target;
     const formData = new FormData(form);
@@ -254,7 +254,7 @@ $('form[action="/products/add"]').on('submit', async (event) => {
     }
 });
 
-$('form[action^="/products/edit/"]').on('submit', async (event) => {
+$('form[action^="/admin/products/edit/"]').on('submit', async (event) => {
     event.preventDefault();
     const form = event.target;
     const formData = new FormData(form);
@@ -289,7 +289,7 @@ $('#addCategoryForm').on('submit', async (event) => {
     };
 
     try {
-        const response = await fetch('/products/categories/add', {
+        const response = await fetch('/admin/products/categories/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),

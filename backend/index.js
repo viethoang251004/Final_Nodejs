@@ -10,8 +10,6 @@ const UserRouter = require('./routers/UserRouter');
 const HomeRouter = require('./routers/HomeRouter');
 const CartRouter = require('./routers/CartRouter');
 const AdminRouter = require('./routers/AdminRouter');
-const ProductRouter = require('./routers/ProductRouter');
-const OrderRouter = require('./routers/OrderRouter');
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
@@ -38,9 +36,6 @@ app.use('/', HomeRouter);
 app.use('/users', UserRouter);
 app.use('/cart', CartRouter);
 app.use('/admin', AdminRouter);
-app.use('/products', ProductRouter);
-app.use('/admin', AdminRouter);
-app.use('/orders', OrderRouter);
 
 const port = process.env.PORT || 8080;
 const CONNECTION_STRING = process.env.CONNECTION_STRING;
