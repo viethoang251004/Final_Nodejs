@@ -1,14 +1,27 @@
 const express = require('express');
 const Router = express.Router();
+const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/UserModel');
-
+const rateLimit = require('express-rate-limit');
 const loginValidator = require('./validators/loginValidator');
 const registerValidator = require('./validators/registerValidator');
+const CheckLogin = require('../auth/CheckLogin');
+const Order = require('../models/OrderModel');
+const allOrderLimiter = rateLimit({
+    windowMs: 10 * 1000, // 10s
+    max: 5,
+    message: 'Không thể gửi quá 5 request trong 10s khi đọc danh sách order',
+});
 
+const detailOrderLimiter = rateLimit({
+    windowMs: 10 * 1000, // 10s
+    max: 2,
+    message: 'Không thể gửi quá 2 request trong 10s khi đọc chi tiết order',
+});
 Router.get('/login', (req, res) => {
     res.render('login');
 });
@@ -133,5 +146,68 @@ Router.post('/register', registerValidator, (req, res) => {
         return res.render('register', { errorMessage: message });
     }
 });
+Router.get(
+    '/orders',
+    CheckLogin,
+    allOrderLimiter,
+    async (req, res) => {
+        try {
+            const { page = 1, limit = 10 } = req.query; // Phân trang với mặc định 10 đơn/trang
 
+            const orders = await Order.find()
+                .sort({ created_at: -1 }) // Sắp xếp giảm dần theo ngày
+                .skip((page - 1) * limit) // Bỏ qua các đơn ở trang trước
+                .limit(parseInt(limit)); // Lấy số đơn hàng theo `limit`
+
+            const totalOrders = await Order.countDocuments(); // Tổng số đơn hàng
+            const totalPages = Math.ceil(totalOrders / limit); // Tổng số trang
+
+            res.render('layouts/user/main', {
+                title: 'Order History',
+                body: 'orderHistory',
+                orders,
+                currentPage: parseInt(page),
+                totalPages,
+                user: req.user || null,
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                error: 'Đã xảy ra lỗi khi lấy danh sách đơn hàng.',
+            });
+        }
+    });
+
+
+Router.get(
+    '/orders/detail/:id',
+    CheckLogin,
+    detailOrderLimiter,
+    async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                return res.status(400).json({ error: 'ID đơn hàng không hợp lệ.' });
+            }
+
+            const order = await Order.findById(id).populate('products.product_id');
+
+            if (!order) {
+                return res.status(404).json({ error: 'Không tìm thấy đơn hàng.' });
+            }
+
+            res.render('layouts/user/main', {
+                title: 'Order Detail',
+                body: 'order-detail',
+                order,
+                user: req.user || null,
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                error: 'Đã xảy ra lỗi khi lấy thông tin đơn hàng.',
+            });
+        }
+    });
 module.exports = Router;
