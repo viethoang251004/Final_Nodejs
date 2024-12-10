@@ -6,13 +6,13 @@ const authMiddleware = require('../auth/authMiddleware');
 const rateLimit = require('express-rate-limit');
 
 const allProductLimiter = rateLimit({
-    windowMs: 10 * 1000, // 10s
+    windowMs: 10 * 1000, 
     max: 5,
     message: 'Không thể gửi quá 5 request trong 10s khi đọc danh sách sản phẩm',
 });
 
 const detailProductLimiter = rateLimit({
-    windowMs: 10 * 1000, // 10s
+    windowMs: 10 * 1000, 
     max: 2,
     message: 'Không thể gửi quá 2 request trong 10s khi đọc chi tiết sản phẩm',
 });
@@ -65,7 +65,7 @@ router.get('/', allProductLimiter, async (req, res) => {
         };
 
         res.render('layouts/user/main', {
-            title: 'Home Page',
+            title: 'Trang chủ',
             body: 'home',
             style: 'home-style',
             categories: categories || [],
@@ -93,7 +93,7 @@ router.get('/products/:id', detailProductLimiter, async (req, res) => {
         }
 
         res.render('layouts/admin/main', {
-            title: 'Product Detail',
+            title: 'Chi tiết sản phẩm',
             body: 'product-detail',
             product, user: req.user || null
         });
