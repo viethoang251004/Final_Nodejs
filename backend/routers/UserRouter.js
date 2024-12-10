@@ -60,6 +60,7 @@ Router.post('/login', loginValidator, (req, res) => {
                                 id: user._id,
                                 email: user.email,
                                 role: user.role,
+                                name: user.name,
                             },
                             JWT_SECRET,
                             { expiresIn: '1h' },
@@ -155,14 +156,14 @@ Router.get('/orders', CheckLogin, allOrderLimiter, async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query; // Phân trang với mặc định 10 đơn/trang
 
-        const orders = await Order.find()
+        const orders = await Order.find({ user_id: req.user.id })
             .sort({ created_at: -1 }) // Sắp xếp giảm dần theo ngày
             .skip((page - 1) * limit) // Bỏ qua các đơn ở trang trước
             .limit(parseInt(limit)); // Lấy số đơn hàng theo `limit`
 
-        const totalOrders = await Order.countDocuments(); // Tổng số đơn hàng
+        const totalOrders = await Order.countDocuments({ user_id: req.user.id }); // Tổng số đơn hàng
         const totalPages = Math.ceil(totalOrders / limit); // Tổng số trang
-
+        console.log('User:', req.user);
         res.render('layouts/user/main', {
             title: 'Order History',
             body: 'orderHistory',
@@ -170,7 +171,7 @@ Router.get('/orders', CheckLogin, allOrderLimiter, async (req, res) => {
             orders,
             currentPage: parseInt(page),
             totalPages,
-            user: req.user || null,
+            user: req.user || {},
         });
     } catch (error) {
         console.error(error);
@@ -194,7 +195,7 @@ Router.get(
                     .json({ error: 'ID đơn hàng không hợp lệ.' });
             }
 
-            const order = await Order.findById(id).populate(
+            const order = await Order.findOne({ _id: id, user_id: req.user.id }).populate(
                 'products.product_id',
             );
 
@@ -209,7 +210,7 @@ Router.get(
                 body: 'order-detail',
                 style: 'order-detail-style',
                 order,
-                user: req.user || null,
+                user: req.user || {},
             });
         } catch (error) {
             console.error(error);
