@@ -1,0 +1,106 @@
+.container {
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+}
+
+h1 {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.card-body {
+    padding: 20px;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+h3 {
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: bold;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.table {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    border-collapse: separate;
+    margin-top: 10px;
+    border-spacing: 0;
+}
+
+.table-bordered th {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 0.95rem;
+    text-align: center;
+    padding: 10px;
+    border: none;
+}
+
+.table-bordered td {
+    font-size: 0.9rem;
+    text-align: center;
+    vertical-align: middle;
+    padding: 10px;
+    color: #555;
+    border: 1px solid #ddd;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+    transition: background-color 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1, h3 {
+        font-size: 1.5rem;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    .card-title {
+        font-size: 1.15rem;
+    }
+
+    .card-text {
+        font-size: 0.85rem;
+    }
+
+    .table th, .table td {
+        font-size: 0.85rem;
+    }
+}
