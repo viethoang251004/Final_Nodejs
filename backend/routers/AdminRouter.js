@@ -22,23 +22,24 @@ const Order = require('../models/OrderModel');
 const mongoose = require("mongoose");
 
 const allProductLimiter = rateLimit({
-    windowMs: 10 * 1000, 
+    windowMs: 10 * 1000, // 10s
     max: 5,
     message: 'Không thể gửi quá 5 request trong 10s khi đọc danh sách sản phẩm',
 });
 
 const allOrderLimiter = rateLimit({
-    windowMs: 10 * 1000, 
+    windowMs: 10 * 1000, // 10s
     max: 5,
     message: 'Không thể gửi quá 5 request trong 10s khi đọc danh sách order',
 });
 
 const detailOrderLimiter = rateLimit({
-    windowMs: 10 * 1000, 
+    windowMs: 10 * 1000, // 10s
     max: 2,
     message: 'Không thể gửi quá 2 request trong 10s khi đọc chi tiết order',
 });
 
+// Multer configuration for image uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, path.join(__dirname, '../public/uploads'));
@@ -85,7 +86,7 @@ router.get('/products', CheckLogin, CheckAdminAccess, allProductLimiter, async (
         const colors = ['Red', 'Blue', 'Green', 'Yellow', 'Black', 'White', 'Pink', 'Purple', 'Brown', 'Orange', 'Cyan', 'Magenta', 'Grey', 'Teal', 'Lime', 'Maroon'];
 
         return res.render('layouts/admin/main', {
-            title: 'Quản lí sản phẩm',
+            title: 'Product Management',
             body: 'productManagement',
             style: 'productManagement-style',
             products,
@@ -108,7 +109,7 @@ router.get('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
     try {
         const coupons = await CouponModel.find().sort({ created_at: -1 });
         res.render('layouts/admin/main', {
-            title: 'Quản lí giảm giá',
+            title: 'Coupon Management',
             body: 'couponManagement',
             style: 'couponManagement-style',
             message: req.query.message || '',
@@ -126,7 +127,7 @@ router.post('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
         const existingCoupon = await CouponModel.findOne({ code });
         if (existingCoupon) {
             return res.render('layouts/admin/main', {
-                title: 'Quản lí giảm giá',
+                title: 'Coupon Management',
                 body: 'couponManagement',
                 style: 'couponManagement-style',
                 message: 'Mã giảm giá đã tồn tại!',
@@ -137,7 +138,7 @@ router.post('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
         const coupon = new CouponModel({ code, discount, expires_at });
         await coupon.save();
         res.render('layouts/admin/main', {
-            title: 'Quản lí giảm giá',
+            title: 'Coupon Management',
             body: 'couponManagement',
             style: 'couponManagement-style',
             message: 'Mã giảm giá được tạo thành công!',
@@ -146,7 +147,7 @@ router.post('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
     } catch (error) {
         console.error('Error creating coupon:', error.message);
         res.render('layouts/admin/main', {
-            title: 'Quản lí giảm giá',
+            title: 'Coupon Management',
             body: 'couponManagement',
             style: 'couponManagement-style',
             message: 'Lỗi khi tạo mã giảm giá!',
@@ -160,7 +161,7 @@ router.post('/coupons/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
         const { id } = req.params;
         await CouponModel.findByIdAndDelete(id);
         res.render('layouts/admin/main', {
-            title: 'Quản lí giảm giá',
+            title: 'Coupon Management',
             body: 'couponManagement',
             style: 'couponManagement-style',
             message: 'Mã giảm giá đã được xóa thành công!',
@@ -169,7 +170,7 @@ router.post('/coupons/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
     } catch (error) {
         console.error('Error deleting coupon:', error.message);
         res.render('layouts/admin/main', {
-            title: 'Quản lí giảm giá',
+            title: 'Coupon Management',
             body: 'couponManagement',
             style: 'couponManagement-style',
             message: 'Lỗi khi xóa mã giảm giá!',
@@ -421,15 +422,15 @@ router.post(
 
 router.get('/orders', CheckLogin, CheckAdminAccess, async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
+        const { page = 1, limit = 10 } = req.query; // Phân trang với mặc định 10 đơn/trang
 
         const orders = await Order.find()
-            .sort({ created_at: -1 }) 
-            .skip((page - 1) * limit) 
-            .limit(parseInt(limit)); 
+            .sort({ created_at: -1 }) // Sắp xếp giảm dần theo ngày
+            .skip((page - 1) * limit) // Bỏ qua các đơn ở trang trước
+            .limit(parseInt(limit)); // Lấy số đơn hàng theo `limit`
 
-        const totalOrders = await Order.countDocuments();
-        const totalPages = Math.ceil(totalOrders / limit);
+        const totalOrders = await Order.countDocuments(); // Tổng số đơn hàng
+        const totalPages = Math.ceil(totalOrders / limit); // Tổng số trang
 
         res.render('layouts/admin/main', {
             title: 'Quản lý đơn hàng',
@@ -451,6 +452,7 @@ router.get('/orders', CheckLogin, CheckAdminAccess, async (req, res) => {
 router.post('/orders/update/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
     try {
         const { status } = req.body;
+        console.log('Received status:', status);  // Debug log
 
         const validStatuses = [
             'đang chờ',
@@ -474,7 +476,7 @@ router.post('/orders/update/:id', CheckLogin, CheckAdminAccess, async (req, res)
             return res.status(404).json({ error: 'Không tìm thấy đơn hàng.' });
         }
 
-        console.log('Order updated:', order); 
+        console.log('Order updated:', order);  // Debug log
 
         res.redirect(`/admin/orders/detail/${req.params.id}`);
     } catch (error) {
@@ -502,11 +504,12 @@ router.post('/orders/create', CheckLogin, CheckAdminAccess, async (req, res) => 
             return res.status(400).json({ error: 'Tổng giá là bắt buộc và phải không âm' });
         }
 
+        // Tạo đơn hàng
         const order = new Order({
             customer_info,
             products,
             total_price,
-            status: 'đang chờ', 
+            status: 'đang chờ', // Set default status
         });
 
         await order.save();
@@ -527,20 +530,24 @@ router.get(
         try {
             const { id } = req.params;
 
+            // Check if the ID is valid
             if (!mongoose.Types.ObjectId.isValid(id)) {
                 return res.status(400).json({ error: 'ID đơn hàng không hợp lệ.' });
             }
 
+            // Fetch the order and populate product details
             const order = await Order.findById(id).populate({
-                path: 'products.product_id',
-                select: 'name price' 
+                path: 'products.product_id', // This will populate the product details
+                select: 'name price' // Select only the necessary fields
             });
 
+            // If the order doesn't exist
             if (!order) {
                 return res.status(404).json({ error: 'Không tìm thấy đơn hàng.' });
             }
 
-            res.render('layouts/admin/main', {
+            // Render the order details page
+            res.render('layouts/user/main', {
                 title: 'Chi tiết đơn hàng',
                 body: 'order-detail-management',
                 style: 'order-detail-management-style',

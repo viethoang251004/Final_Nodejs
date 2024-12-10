@@ -16,13 +16,13 @@ const authMiddleware = require('../auth/authMiddleware');
 Router.use(authMiddleware);
 
 const allOrderLimiter = rateLimit({
-    windowMs: 10 * 1000, 
+    windowMs: 10 * 1000, // 10s
     max: 5,
     message: 'Không thể gửi quá 5 request trong 10s khi đọc danh sách order',
 });
 
 const detailOrderLimiter = rateLimit({
-    windowMs: 10 * 1000, 
+    windowMs: 10 * 1000, // 10s
     max: 2,
     message: 'Không thể gửi quá 2 request trong 10s khi đọc chi tiết order',
 });
@@ -128,7 +128,7 @@ Router.post('/register', registerValidator, (req, res) => {
                     name: name.toLowerCase(),
                     email: email.toLowerCase(),
                     password: hashed,
-                    role: role || 'CUSTOMER', 
+                    role: role || 'CUSTOMER', // Default is  CUSTOMER
                     addresses: addresses || [],
                     social_auth: social_auth || {},
                     points: points || 0,
@@ -154,18 +154,18 @@ Router.post('/register', registerValidator, (req, res) => {
 
 Router.get('/orders', CheckLogin, allOrderLimiter, async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
+        const { page = 1, limit = 10 } = req.query; // Phân trang với mặc định 10 đơn/trang
 
         const orders = await Order.find({ user_id: req.user.id })
-            .sort({ created_at: -1 }) 
-            .skip((page - 1) * limit) 
-            .limit(parseInt(limit)); 
+            .sort({ created_at: -1 }) // Sắp xếp giảm dần theo ngày
+            .skip((page - 1) * limit) // Bỏ qua các đơn ở trang trước
+            .limit(parseInt(limit)); // Lấy số đơn hàng theo `limit`
 
-        const totalOrders = await Order.countDocuments({ user_id: req.user.id }); 
-        const totalPages = Math.ceil(totalOrders / limit); 
+        const totalOrders = await Order.countDocuments({ user_id: req.user.id }); // Tổng số đơn hàng
+        const totalPages = Math.ceil(totalOrders / limit); // Tổng số trang
         console.log('User:', req.user);
         res.render('layouts/user/main', {
-            title: 'Lịch sử đơn hàng',
+            title: 'Order History',
             body: 'orderHistory',
             style: 'orderHistory-style',
             orders,
@@ -226,5 +226,84 @@ Router.get('/logout', (req, res) => {
     res.clearCookie('userRole');
     res.redirect('/');
 });
+
+Router.get('/profile', async (req, res) => {
+    try {
+        const userId = req.user.id; // `req.user` được lấy từ authMiddleware
+        const user = await User.findById(userId).select('-password'); // Không lấy password
+
+        if (!user) {
+            return res.status(404).render('error', { message: 'Người dùng không tồn tại.' });
+        }
+
+        // Render trang `profile.ejs` với dữ liệu người dùng
+        res.render('layouts/user/main', { 
+            title: 'Hồ sơ người dùng',
+            body: 'profile',
+            style: 'profile-style',
+            user
+        });
+    } catch (error) {
+        console.error('Lỗi khi lấy thông tin người dùng:', error);
+        res.status(500).render('error', { message: 'Đã xảy ra lỗi khi lấy thông tin người dùng.' });
+    }
+});
+
+
+Router.post('/profile', async (req, res) => {
+    try {
+        const userId = req.user.id; // Lấy thông tin user từ middleware
+        let { name, email, addresses, points, password } = req.body; // Dữ liệu từ body
+
+        // Kiểm tra người dùng tồn tại
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'Người dùng không tồn tại.' });
+        }
+
+        // Cập nhật các trường cơ bản
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (points) user.points = parseInt(points, 10);
+
+        // Chuyển đổi `addresses` từ đối tượng hoặc JSON sang mảng
+        if (addresses) {
+            if (typeof addresses === 'string') {
+                // Nếu `addresses` là chuỗi JSON, parse thành mảng
+                addresses = JSON.parse(addresses);
+            }
+
+            // Đảm bảo `addresses` là một mảng hợp lệ
+            if (Array.isArray(addresses)) {
+                user.addresses = addresses.map((addr) => ({
+                    full_name: addr.full_name || '',
+                    phone: addr.phone || '',
+                    address: addr.address || '',
+                    is_default: addr.is_default === 'true' || addr.is_default === true,
+                }));
+            } else {
+                return res.status(400).json({ error: 'Địa chỉ không đúng định dạng.' });
+            }
+        }
+
+        // Hash và cập nhật mật khẩu nếu có
+        if (password) {
+            if (password.length >= 6) {
+                user.password = await bcryptjs.hash(password, 10);
+            } else {
+                return res.status(400).json({ error: 'Mật khẩu mới phải dài ít nhất 6 ký tự.' });
+            }
+        }
+
+        // Lưu thay đổi
+        await user.save();
+
+        res.status(200).json({ message: 'Cập nhật thông tin thành công.', user });
+    } catch (error) {
+        console.error('Lỗi khi cập nhật thông tin người dùng:', error);
+        res.status(500).json({ error: 'Đã xảy ra lỗi khi cập nhật thông tin người dùng.' });
+    }
+});
+
 
 module.exports = Router;
