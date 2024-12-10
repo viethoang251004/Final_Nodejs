@@ -287,8 +287,9 @@ router.get('/checkout', async (req, res) => {
         }
         const total_price = subtotal - discountAmount;
         res.render('layouts/user/main', {
-            title: 'Checkout Page',
+            title: 'Trang thanh toán',
             body: 'checkout',
+            style: 'checkout-style',
             cartItems,
             total,
             user: req.user || null,
@@ -375,7 +376,7 @@ router.post('/checkout/confirm', async (req, res) => {
         const total_price = subtotal + shippingCost;
 
         return res.render('layouts/user/main', {
-            title: 'Checkout Confirm',
+            title: 'Xác nhận thanh toán',
             body: 'checkout_confirm',
             style: 'checkout_confirm-style',
             cartItems,
@@ -471,31 +472,27 @@ router.post('/checkout/complete', async (req, res) => {
     const userId = req.user ? req.user._id : null;
 
     try {
-        // Parse cart items from request body
+
         cartItems = JSON.parse(req.body.cartItems || '[]');
 
-        // Validate cart items
         if (!Array.isArray(cartItems) || cartItems.length === 0) {
             return res.status(400).send('Giỏ hàng trống, không thể tạo đơn hàng.');
         }
 
-        // Map cart items to order products
         products = cartItems.map((item) => ({
             product_id: item.product._id || item.product_id,
-            product_name: item.product.name,
+            product_name: item.product.name || 'Sản phẩm không xác định',
             quantity: item.quantity,
             price: item.product.price,
             variant: item.variant || null,
         }));
-        console.log("product.....:", products);
 
-        // Calculate total price
+
         total = cartItems.reduce(
             (sum, item) => sum + item.quantity * (item.variant?.price || item.product.price),
             0,
         );
 
-        // Apply discount if applicable
         if (discountCode) {
             const coupon = await CouponModel.findOne({ code: discountCode });
             if (coupon && new Date(coupon.expires_at) >= new Date()) {
@@ -506,11 +503,10 @@ router.post('/checkout/complete', async (req, res) => {
         const subtotal = total - discountAmount;
         const finalPrice = subtotal + parseInt(shippingCost, 10);
 
-        // Create order
         const newOrder = new OrderModel({
             user_id: req.user ? req.user._id : null,
             customer_info: { full_name, phone, address },
-            products,
+            products: products,
             total_price: finalPrice,
             discount: discountAmount,
             payment_method: paymentMethod,
@@ -519,13 +515,12 @@ router.post('/checkout/complete', async (req, res) => {
 
         await newOrder.save();
 
-        // Clear session cart if not logged in
         if (!userId) {
             req.session.cart = [];
         }
 
         res.render('layouts/user/main', {
-            title: 'Order Complete',
+            title: 'Xác nhận đơn hàng',
             body: 'order_complete',
             style: 'order_complete-style',
             order: newOrder,
