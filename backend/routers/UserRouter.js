@@ -205,8 +205,9 @@ Router.get(
             }
 
             res.render('layouts/user/main', {
-                title: 'Order Detail',
+                title: 'Chi tiết đơn hàng',
                 body: 'order-detail',
+                style: 'order-detail-style',
                 order,
                 user: req.user || null,
             });

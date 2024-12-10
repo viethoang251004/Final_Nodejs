@@ -17,13 +17,24 @@
                 <td><%= order._id %></td>
                 <td><%= order.customer_info.full_name %></td>
                 <td><%= order.total_price %> VND</td>
-                <td><%= order.status %></td>
                 <td>
-                    <a href="/orders/<%= order._id %>" class="btn btn-info btn-sm">Chi tiết</a>
+                    <!-- Update status dropdown -->
+                    <form action="/admin/orders/update/<%= order._id %>" method="POST" style="display: inline;">
+                        <select name="status" class="form-control form-control-sm" required>
+                            <option value="đang chờ" <%= order.status === 'đang chờ' ? 'selected' : '' %>>Đang chờ</option>
+                            <option value="đã xác nhận" <%= order.status === 'đã xác nhận' ? 'selected' : '' %>>Đã xác nhận</option>
+                            <option value="đang vận chuyển" <%= order.status === 'đang vận chuyển' ? 'selected' : '' %>>Đang vận chuyển</option>
+                            <option value="đã giao" <%= order.status === 'đã giao' ? 'selected' : '' %>>Đã giao</option>
+                            <option value="đã hủy" <%= order.status === 'đã hủy' ? 'selected' : '' %>>Đã hủy</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary mt-2">Cập nhật</button>
+                    </form>
+                </td>
+                <td>
+                    <a href="/admin/orders/detail/<%= order._id %>" class="btn btn-info btn-sm">Chi tiết</a>
                 </td>
             </tr>
         <% }) %>
         </tbody>
     </table>
 </div>
-

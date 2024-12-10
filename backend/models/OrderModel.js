@@ -67,8 +67,12 @@ const OrderSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ['pending', 'confirmed', 'shipping', 'delivered', 'canceled'], // Valid order statuses
-        default: 'pending',
+        enum: ['đang chờ',
+            'đã xác nhận',
+            'đang vận chuyển',
+            'đã giao',
+            'đã hủy'], // Valid order statuses
+        default: 'đang chờ',
     },
     discount_code: {
         type: String,
