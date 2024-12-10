@@ -1,0 +1,152 @@
+
+<div class="container mt-5">
+    <h1 class="mb-4">Thông tin cá nhân</h1>
+    <form id="profile-form" action="/users/profile" method="POST" class="needs-validation" novalidate>
+        <!-- Họ và tên -->
+        <div class="mb-3">
+            <label for="name" class="form-label">Họ và tên:</label>
+            <input type="text" id="name" name="name" class="form-control" value="<%= user.name %>" required>
+            <div class="invalid-feedback">Vui lòng nhập họ và tên.</div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" id="email" name="email" class="form-control" value="<%= user.email %>" required>
+            <div class="invalid-feedback">Vui lòng nhập email hợp lệ.</div>
+        </div>
+
+        <!-- Điểm thưởng -->
+        <div class="mb-3">
+            <label for="points" class="form-label">Điểm thưởng:</label>
+            <input type="number" id="points" name="points" class="form-control" value="<%= user.points %>" min="0" readonly>
+        </div>
+
+        <!-- Danh sách địa chỉ -->
+        <div class="mb-3">
+            <label class="form-label">Danh sách địa chỉ:</label>
+            <div id="addresses-container">
+                <% user.addresses.forEach((address, index) => { %>
+                    <div class="border p-3 mb-3 rounded">
+                        <h6>Địa chỉ <%= index + 1 %></h6>
+                        <div class="mb-2">
+                            <label for="full_name_<%= index %>" class="form-label">Họ và tên:</label>
+                            <input type="text" id="full_name_<%= index %>" name="addresses[<%= index %>][full_name]" class="form-control" value="<%= address.full_name %>" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="phone_<%= index %>" class="form-label">Số điện thoại:</label>
+                            <input type="text" id="phone_<%= index %>" name="addresses[<%= index %>][phone]" class="form-control" value="<%= address.phone %>" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="address_<%= index %>" class="form-label">Địa chỉ:</label>
+                            <input type="text" id="address_<%= index %>" name="addresses[<%= index %>][address]" class="form-control" value="<%= address.address %>" required>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="is_default_<%= index %>" name="addresses[<%= index %>][is_default]" class="form-check-input" <%= address.is_default ? 'checked' : '' %>>
+                            <label for="is_default_<%= index %>" class="form-check-label">Đặt làm mặc định</label>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            <button type="button" id="add-address" class="btn btn-secondary">Thêm địa chỉ</button>
+        </div>
+
+        <!-- Mật khẩu mới -->
+        <div class="mb-3">
+            <label for="password" class="form-label">Mật khẩu mới:</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Để trống nếu không muốn đổi mật khẩu">
+            <div class="invalid-feedback">Mật khẩu mới phải dài ít nhất 6 ký tự.</div>
+        </div>
+
+        <!-- Nút cập nhật -->
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
+    </form>
+</div>
+
+<!-- Modal Thông báo -->
+<div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alertModalLabel">Thông báo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-message">
+                <!-- Nội dung thông báo sẽ được cập nhật tại đây -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Thêm địa chỉ mới
+    document.getElementById('add-address').addEventListener('click', function () {
+        const container = document.getElementById('addresses-container');
+        const count = container.children.length;
+        const newAddress = `
+            <div class="border p-3 mb-3 rounded">
+                <h6>Địa chỉ ${count + 1}</h6>
+                <div class="mb-2">
+                    <label for="full_name_${count}" class="form-label">Họ và tên:</label>
+                    <input type="text" id="full_name_${count}" name="addresses[${count}][full_name]" class="form-control" required>
+                </div>
+                <div class="mb-2">
+                    <label for="phone_${count}" class="form-label">Số điện thoại:</label>
+                    <input type="text" id="phone_${count}" name="addresses[${count}][phone]" class="form-control" required>
+                </div>
+                <div class="mb-2">
+                    <label for="address_${count}" class="form-label">Địa chỉ:</label>
+                    <input type="text" id="address_${count}" name="addresses[${count}][address]" class="form-control" required>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" id="is_default_${count}" name="addresses[${count}][is_default]" class="form-check-input">
+                    <label for="is_default_${count}" class="form-check-label">Đặt làm mặc định</label>
+                </div>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', newAddress);
+    });
+
+    // Gửi form qua AJAX và hiển thị modal
+    document.getElementById('profile-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+    
+        const formData = new FormData(this);
+        const data = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            points: formData.get('points'),
+            password: formData.get('password') || undefined,
+            addresses: [],
+        };
+    
+        // Duyệt qua các địa chỉ và thêm vào mảng
+        const addressElements = document.querySelectorAll('#addresses-container .border');
+        addressElements.forEach((el, index) => {
+            const address = {
+                full_name: el.querySelector(`#full_name_${index}`).value,
+                phone: el.querySelector(`#phone_${index}`).value,
+                address: el.querySelector(`#address_${index}`).value,
+                is_default: el.querySelector(`#is_default_${index}`).checked,
+            };
+            data.addresses.push(address);
+        });
+    
+        // Gửi dữ liệu qua AJAX
+        const response = await fetch('/users/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+    
+        const result = await response.json();
+        if (response.ok) {
+            alert('Cập nhật thông tin thành công!');
+        } else {
+            alert(result.error || 'Đã xảy ra lỗi!');
+        }
+    });        
+</script>
