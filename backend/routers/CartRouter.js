@@ -482,10 +482,12 @@ router.post('/checkout/complete', async (req, res) => {
         // Map cart items to order products
         products = cartItems.map((item) => ({
             product_id: item.product._id || item.product_id,
+            product_name: item.product.name,
             quantity: item.quantity,
             price: item.product.price,
             variant: item.variant || null,
         }));
+        console.log("product.....:", products);
 
         // Calculate total price
         total = cartItems.reduce(
@@ -506,7 +508,7 @@ router.post('/checkout/complete', async (req, res) => {
 
         // Create order
         const newOrder = new OrderModel({
-            user_id: userId,
+            user_id: req.user ? req.user._id : null,
             customer_info: { full_name, phone, address },
             products,
             total_price: finalPrice,
