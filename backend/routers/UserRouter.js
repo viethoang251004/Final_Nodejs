@@ -165,7 +165,7 @@ Router.get('/orders', CheckLogin, allOrderLimiter, async (req, res) => {
         const totalPages = Math.ceil(totalOrders / limit); // Tổng số trang
         console.log('User:', req.user);
         res.render('layouts/user/main', {
-            title: 'Order History',
+            title: 'Lịch sử đơn hàng',
             body: 'orderHistory',
             style: 'orderHistory-style',
             orders,

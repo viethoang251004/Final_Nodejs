@@ -86,7 +86,7 @@ router.get('/products', CheckLogin, CheckAdminAccess, allProductLimiter, async (
         const colors = ['Red', 'Blue', 'Green', 'Yellow', 'Black', 'White', 'Pink', 'Purple', 'Brown', 'Orange', 'Cyan', 'Magenta', 'Grey', 'Teal', 'Lime', 'Maroon'];
 
         return res.render('layouts/admin/main', {
-            title: 'Product Management',
+            title: 'Quản lí sản phẩm',
             body: 'productManagement',
             style: 'productManagement-style',
             products,
@@ -109,7 +109,7 @@ router.get('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
     try {
         const coupons = await CouponModel.find().sort({ created_at: -1 });
         res.render('layouts/admin/main', {
-            title: 'Coupon Management',
+            title: 'Quản lí giảm giá',
             body: 'couponManagement',
             style: 'couponManagement-style',
             message: req.query.message || '',
@@ -127,7 +127,7 @@ router.post('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
         const existingCoupon = await CouponModel.findOne({ code });
         if (existingCoupon) {
             return res.render('layouts/admin/main', {
-                title: 'Coupon Management',
+                title: 'Quản lí giảm giá',
                 body: 'couponManagement',
                 style: 'couponManagement-style',
                 message: 'Mã giảm giá đã tồn tại!',
@@ -138,7 +138,7 @@ router.post('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
         const coupon = new CouponModel({ code, discount, expires_at });
         await coupon.save();
         res.render('layouts/admin/main', {
-            title: 'Coupon Management',
+            title: 'Quản lí giảm giá',
             body: 'couponManagement',
             style: 'couponManagement-style',
             message: 'Mã giảm giá được tạo thành công!',
@@ -147,7 +147,7 @@ router.post('/coupons', CheckLogin, CheckAdminAccess, async (req, res) => {
     } catch (error) {
         console.error('Error creating coupon:', error.message);
         res.render('layouts/admin/main', {
-            title: 'Coupon Management',
+            title: 'Quản lí giảm giá',
             body: 'couponManagement',
             style: 'couponManagement-style',
             message: 'Lỗi khi tạo mã giảm giá!',
@@ -161,7 +161,7 @@ router.post('/coupons/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
         const { id } = req.params;
         await CouponModel.findByIdAndDelete(id);
         res.render('layouts/admin/main', {
-            title: 'Coupon Management',
+            title: 'Quản lí giảm giá',
             body: 'couponManagement',
             style: 'couponManagement-style',
             message: 'Mã giảm giá đã được xóa thành công!',
@@ -170,7 +170,7 @@ router.post('/coupons/:id', CheckLogin, CheckAdminAccess, async (req, res) => {
     } catch (error) {
         console.error('Error deleting coupon:', error.message);
         res.render('layouts/admin/main', {
-            title: 'Coupon Management',
+            title: 'Quản lí giảm giá',
             body: 'couponManagement',
             style: 'couponManagement-style',
             message: 'Lỗi khi xóa mã giảm giá!',

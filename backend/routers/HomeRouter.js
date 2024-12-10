@@ -65,7 +65,7 @@ router.get('/', allProductLimiter, async (req, res) => {
         };
 
         res.render('layouts/user/main', {
-            title: 'Home Page',
+            title: 'Trang chủ',
             body: 'home',
             style: 'home-style',
             categories: categories || [],
@@ -93,7 +93,7 @@ router.get('/products/:id', detailProductLimiter, async (req, res) => {
         }
 
         res.render('layouts/admin/main', {
-            title: 'Product Detail',
+            title: 'Chi tiết sản phẩm',
             body: 'product-detail',
             product, user: req.user || null
         });

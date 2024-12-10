@@ -287,7 +287,7 @@ router.get('/checkout', async (req, res) => {
         }
         const total_price = subtotal - discountAmount;
         res.render('layouts/user/main', {
-            title: 'Checkout Page',
+            title: 'Trang thanh toán',
             body: 'checkout',
             cartItems,
             total,
@@ -375,7 +375,7 @@ router.post('/checkout/confirm', async (req, res) => {
         const total_price = subtotal + shippingCost;
 
         return res.render('layouts/user/main', {
-            title: 'Checkout Confirm',
+            title: 'Xác nhận thanh toán',
             body: 'checkout_confirm',
             style: 'checkout_confirm-style',
             cartItems,
@@ -482,7 +482,7 @@ router.post('/checkout/complete', async (req, res) => {
         // Map cart items to order products
         products = cartItems.map((item) => ({
             product_id: item.product._id || item.product_id,
-            product_name: item.product.name,
+            product_name: item.product.name || 'Sản phẩm không xác định',
             quantity: item.quantity,
             price: item.product.price,
             variant: item.variant || null,
@@ -510,7 +510,7 @@ router.post('/checkout/complete', async (req, res) => {
         const newOrder = new OrderModel({
             user_id: req.user ? req.user._id : null,
             customer_info: { full_name, phone, address },
-            products,
+            products: products,
             total_price: finalPrice,
             discount: discountAmount,
             payment_method: paymentMethod,
@@ -525,7 +525,7 @@ router.post('/checkout/complete', async (req, res) => {
         }
 
         res.render('layouts/user/main', {
-            title: 'Order Complete',
+            title: 'Xác nhận đơn hàng',
             body: 'order_complete',
             style: 'order_complete-style',
             order: newOrder,
